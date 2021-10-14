@@ -157,4 +157,4 @@ def test_annihilate(fock_vector, index):
 
 #test_annihilate(fock_vector(5, 3, [1,2,2]), 1)
 #test_annihilate(fock_vector(3,5, [1, 1, 0, 0, 1]), 2)
-test_annihilate(fock_vector(3,5, [1, 1, 0, 0, 1]), 4)
+#test_annihilate(fock_vector(3,5, [1, 1, 0, 0, 1]), 4)
