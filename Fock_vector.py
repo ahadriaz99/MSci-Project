@@ -57,16 +57,17 @@ class fock_vector:
             assert np.array(occupations).sum() == N
         
         #Optimised dictionary construction
-        '''
-        self.occup_basis = np.array(np.argwhere(occupations != 0))[0]
-        print(self.occup_basis)
-        print(occupations[np.argwhere(occupations != 0)])
-        occups = zip(np.argwhere(occupations != 0), \
-                     np.where(occupations != 0))
-        self.occups = dict(np.array(occups))
-        '''
                 
         occups = []
+        '''
+        self.occup_basis = np.array(np.where(occupations!= 0))
+        print(self.occup_basis)
+        #print(occupations[np.argwhere(occupations != 0)])
+        occups = np.dstack(np.where(occupations != 0), \
+                           occupations[tuple(np.array(np.where(occupations!=0)))])
+        self.occups = dict(np.array(occups))
+        '''
+        
         for i in range(len(occupations)):
             # Only store non-zero occupations
             if (occupations[i] != 0):
@@ -76,6 +77,7 @@ class fock_vector:
                 occups.append((i, occupations[i]))
         # Create dictionary of occupations
         # indexed by occupied single particle indices
+        
         # Memory saving for long Fock vectors
         self.occups = dict(np.array(occups))
 
