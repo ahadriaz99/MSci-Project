@@ -13,6 +13,7 @@ import copy
 
 from Fock_vector import fock_vector
 import Ryser_Algorithm as ryser
+import config as configs
 
 def Dirac_Delta(a, b):
     '''
@@ -78,7 +79,7 @@ class Hamiltonian:
         SP_overlap = np.zeros((self.M, self.M))
         for a in fock_basis1.occup_basis:
             for b in fock_basis2.occup_basis:
-                    SP_overlap[a,b] = 1
+                    SP_overlap[a,b] = Dirac_Delta(a, b)
                     
         print(SP_overlap)
         permanent = ryser.perm_ryser(SP_overlap)
@@ -90,6 +91,7 @@ class Hamiltonian:
         Generate many-body basis states from repeated combinations
         and index them
         '''
+        config_input = np.array(configs.configurations(self.N, self.M))
         
         
     def generate_overlaps(self):
