@@ -22,7 +22,7 @@ def Dirac_Delta(a, b):
         return 0
 
 class fock_vector:
-    def __init__(self, N, M, occupations):
+    def __init__(self, N, M, occupations, index=None):
         '''
         Class for representing a bosonic Fock space vectors in
         occupation number representation
@@ -41,6 +41,8 @@ class fock_vector:
         # as an array. Each element represents a basis state index [1,M]
         # which is occupied in the vector
         self.occup_basis = []
+        
+        self.index = index # Unique index of basis state assigned when creating object
         
         # Check that input occupancy ket is indeed an element of Fock space
         
@@ -111,12 +113,6 @@ class fock_vector:
             prefactor = np.sqrt(result_vec.occups[index])
             result_vec.occups[index] -= 1
             return (result_vec, prefactor)
-            
-    def index(self):
-        '''
-        Generate unique index for state
-        '''
-        # To be completed
     
     def print_info(self):
         '''

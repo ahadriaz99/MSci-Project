@@ -92,7 +92,12 @@ class Hamiltonian:
         and index them
         '''
         config_input = np.array(configs.configurations(self.N, self.M))
-        
+        assert len(config_input) == self.fock_size()
+
+        for config in config_input:
+            self.basis.append(fock_vector(self.N, self.M, config))
+        for basis in self.basis:
+            basis.print_info()
         
     def generate_overlaps(self):
         '''
@@ -106,10 +111,7 @@ def Disc_BEC(Hamiltonian):
         super().__init__(N, M)
                 
 
-fock_basis1 = fock_vector(5, 3, [3, 1, 1])
-fock_basis2 = fock_vector(5, 3, [3, 1, 1])
-H = Hamiltonian(5, 3)
-print(H.fock_size())
-print(fock_basis1.print_info())
-print(fock_basis2.print_info())
-print(H.overlap(fock_basis1, fock_basis2))
+#fock_basis1 = fock_vector(5, 3, [3, 1, 1])
+#fock_basis2 = fock_vector(5, 3, [3, 1, 1])
+H = Hamiltonian(2, 3)
+H.generate_basis()
