@@ -83,7 +83,8 @@ class fock_vector:
         # Memory saving for long Fock vectors
         self.occups = dict(np.array(occups))
 
-        
+    def is_vacuum(self):
+        return self.occup_basis == []
     def annihilate(self, index):
         '''
         Method to carry out annihilation on a Fock ket
