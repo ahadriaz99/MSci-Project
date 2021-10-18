@@ -114,6 +114,30 @@ class fock_vector:
             result_vec.occups[index] -= 1
             return (result_vec, prefactor)
     
+    def creation(self,index):
+        
+        '''
+        Method to carry out creation on a Fock ket index:
+        Method doesn't modify original fock vector
+        Returns:
+                result_vec = Fock vector
+                prefactor = creation factor
+        '''
+        assert index >= 0 and index <= self.M
+        
+        result_vec = copy.deepcopy(self)
+        
+        if (index not in self.occup_basis):   
+            result_vec.occups[index] = 1
+            result_vec.occup_basis.append(index)
+            prefactor = 1
+        else:
+            prefactor = np.sqrt(result_vec.occups[index] + 1)
+            result_vec.occups[index] += 1
+        
+        return (result_vec, prefactor)
+    
+    
     def print_info(self):
         '''
         Print information on Fock vector
@@ -147,7 +171,16 @@ def test_annihilate(fock_vector, index):
     print('Prefactor: ', test_vector.annihilate(index)[1])
     print()
     print()
-
+    
+def test_create(fock_vector, index):
+    test_vector = fock_vector
+    print('Input')
+    test_vector.print_info()
+    print('Creation on index ', index)
+    print('Resulting Fock vector')
+    print(test_vector.creation(index)[0].print_info())
+    print('Prefactor: ', test_vector.creation(index)[1])
+    
 # Simple Tests
 
 #test_init(5, 3, [1,2,2])
@@ -155,4 +188,5 @@ def test_annihilate(fock_vector, index):
 
 #test_annihilate(fock_vector(5, 3, [1,2,2]), 1)
 #test_annihilate(fock_vector(3,5, [1, 1, 0, 0, 1]), 2)
-#test_annihilate(fock_vector(3,5, [1, 1, 0, 0, 1]), 4)
+#test_annihilate(fock_vector(3,5, [1, 0, 0, 0, 2]),2)
+#test_create(fock_vector(4,5,[1,1,1,0,1]),2)
