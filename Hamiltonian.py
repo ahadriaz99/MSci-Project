@@ -152,7 +152,11 @@ class Hamiltonian:
                                     # Assign matrix element with matrix_overlap including total prefactors and overlaps
                                     self.many_body_H[basis1.index, basis2.index] = \
                                         matrix_overlap*new_basis2[1]*self.overlap(basis1, new_basis2[0])
-                                        
+               
+    def print_Hamiltonian:
+        print(self.many_body_H)
+        return
+    
     def diagonalise(self):
         '''
         Carry out exact diagonalisation
