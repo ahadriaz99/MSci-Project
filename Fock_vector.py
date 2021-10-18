@@ -146,6 +146,7 @@ class fock_vector:
         print('N %d M %d'%(self.N,self.M))
         print('Occupied bases: \n', self.occup_basis)
         print('Occupations: \n', self.occups)
+        print('Unique index: ', self.index)
         print('-----------')
         
 def test_init(N, M, occupations):
