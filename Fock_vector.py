@@ -94,7 +94,7 @@ class fock_vector:
             result_vec: Fock vector
             prefactor: annihilation factor
         '''
-        assert index >= 0 and index <= self.M
+        assert (index >= 0 and index < self.M)
                 
         if (index not in self.occup_basis):
             # No excitations on sought basis
@@ -124,14 +124,13 @@ class fock_vector:
                 result_vec = Fock vector
                 prefactor = creation factor
         '''
-        assert index >= 0 and index <= self.M
+        assert (index >= 0 and index < self.M)
         
         result_vec = copy.deepcopy(self)
-        
+        prefactor = 1
         if (index not in self.occup_basis):   
             result_vec.occups[index] = 1
             result_vec.occup_basis.append(index)
-            prefactor = 1
         else:
             prefactor = np.sqrt(result_vec.occups[index] + 1)
             result_vec.occups[index] += 1
@@ -191,4 +190,19 @@ def test_create(fock_vector, index):
 #test_annihilate(fock_vector(5, 3, [1,2,2]), 1)
 #test_annihilate(fock_vector(3,5, [1, 1, 0, 0, 1]), 2)
 #test_annihilate(fock_vector(3,5, [1, 0, 0, 0, 2]),2)
-#test_create(fock_vector(4,5,[1,1,1,0,1]),2)
+#test_create(fock_vector(3,2,[1,2]),2)
+#test_create(fock_vector(3,2,[2,1]),2)
+#test_create(fock_vector(3,2,[1,1]),2)
+
+vector = fock_vector(3, 2, [2, 1])
+vector.print_info()
+print('Annihilation on 0')
+vector_1, prefactor_1 = vector.annihilate(0)
+vector_1.print_info()
+print(prefactor_1)
+print('Creation on 0')
+vector_2, prefactor_2 = vector_1.creation(0)
+vector_2.print_info()
+print(prefactor_2)
+print('prefactor ', prefactor_1*prefactor_2)
+
