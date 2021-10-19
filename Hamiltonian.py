@@ -70,7 +70,7 @@ class Hamiltonian:
 
         product = 1
         # NOT WORKING
-        if (fock_basis1.occup_basis.sort() != fock_basis2.occup_basis.sort()):
+        if (fock_basis1.occups.keys() != fock_basis2.occups.keys()):
             return 0
         else:
         # We have ensured occupied bases are the same
@@ -202,8 +202,8 @@ def Disc_BEC(Hamiltonian):
     def __init__(self, N, M):
         super().__init__(N, M)
                 
-N = 3
-M = 2
+N = 2
+M = 3
 H = Hamiltonian(N, M)
 
 
