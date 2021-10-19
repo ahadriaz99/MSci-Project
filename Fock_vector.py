@@ -142,12 +142,12 @@ class fock_vector:
         '''
         Print information on Fock vector
         '''
-        print('-----------')
-        print('N %d M %d'%(self.N,self.M))
-        print('Occupied bases: \n', self.occup_basis)
-        print('Occupations: \n', self.occups)
-        print('Unique index: ', self.index)
-        print('-----------')
+        print('Index: ', self.index)
+        value = np.zeros(self.M)
+        for i in self.occup_basis:
+            value[i] = self.occups[i]
+        print('State: ', value)
+        return value
         
 def test_init(N, M, occupations):
     '''
@@ -193,7 +193,7 @@ def test_create(fock_vector, index):
 #test_create(fock_vector(3,2,[1,2]),2)
 #test_create(fock_vector(3,2,[2,1]),2)
 #test_create(fock_vector(3,2,[1,1]),2)
-
+'''
 vector = fock_vector(3, 2, [2, 1])
 vector.print_info()
 print('Annihilation on 0')
@@ -205,4 +205,4 @@ vector_2, prefactor_2 = vector_1.creation(0)
 vector_2.print_info()
 print(prefactor_2)
 print('prefactor ', prefactor_1*prefactor_2)
-
+'''
