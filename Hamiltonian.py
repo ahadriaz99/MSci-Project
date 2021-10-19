@@ -149,7 +149,7 @@ class Hamiltonian:
         Construct many-body matrix elements for disc Hamiltonian
         '''
         V0 = 1
-        return Dirac_Delta(i+j, k+l)#*V0*math.factorial(i+l)/2**(i+j)
+        return Dirac_Delta(i+j, k+l)*V0*math.factorial(i+l)/2**(i+j)
         
     def H_element(self, basis1, basis2):
         assert basis1 in self.basis and basis2 in self.basis
