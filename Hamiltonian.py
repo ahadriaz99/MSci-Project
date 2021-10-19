@@ -202,8 +202,8 @@ def Disc_BEC(Hamiltonian):
     def __init__(self, N, M):
         super().__init__(N, M)
                 
-N = 2
-M = 3
+N = 3
+M = 2
 H = Hamiltonian(N, M)
 
 
