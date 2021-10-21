@@ -65,8 +65,8 @@ class Hamiltonian:
         # First calculate orderings of excitations for
         # each basis state
         
-        print('Basis1', fock_basis1.occup_basis.sort())
-        print('Basis2', fock_basis2.occup_basis.sort())
+        #print('Basis1', fock_basis1.occup_basis)
+        #print('Basis2', fock_basis2.occup_basis)
 
         product = 1
         # NOT WORKING
@@ -119,7 +119,7 @@ class Hamiltonian:
             
     def act_H(self, basis, i, j, k, l):
         '''
-        Act Hamiltonian b_i^dagger b_j^daggar b_k b_l on some fock basis state
+        Act Hamiltonian b_i^dagger b_j^dagger b_k b_l on some fock basis state
         '''
         #print('Applying Hamiltonian in ', i, j, k, l)
         result_basis = None
@@ -130,8 +130,6 @@ class Hamiltonian:
         prefactor_2 = 1
         prefactor_3 = 1
         prefactor_4 = 1
-
-
         total_prefactor = 1
         '''
         # ONLY FOR TESTING
@@ -146,8 +144,8 @@ class Hamiltonian:
         assert np.array([i, j, k, l]).all() < self.M and np.array([i, j, k, l]).all() >= 0
 
         vacuum = fock_vector(self.N, self.M, np.zeros(self.M))
-        if ((i+j) != (k+l)):
-            return (vacuum, 0)
+        #if ((i+j) != (k+l)):
+        #    return (vacuum, 0)
         if (l not in basis.occup_basis):
             return (vacuum, 0)
         result_basis_1, prefactor_1 = basis.annihilate(l)
@@ -159,6 +157,7 @@ class Hamiltonian:
         total_prefactor = prefactor_1*prefactor_2*prefactor_3*prefactor_4
         
         #print(sum(result_basis.occups.values()), self.N)
+        # Assert that final vector is an element of number conserving Fock space
         assert sum(result_basis.occups.values()) == self.N
         
         
@@ -169,7 +168,8 @@ class Hamiltonian:
         Construct many-body matrix elements for disc Hamiltonian
         '''
         V0 = 1
-        return Dirac_Delta(i+j, k+l)*V0*math.factorial(i+l)/2**(i+j)
+
+        return 1#Dirac_Delta(i+j, k+l)*V0*math.factorial(i+l)/2**(i+j)
         
     def H_element(self, basis1, basis2):
         assert basis1 in self.basis and basis2 in self.basis
@@ -177,13 +177,13 @@ class Hamiltonian:
         basis1.print_info()
         print('Basis 2')
         basis2.print_info()
-        element = 0
+        element = 0 # Matrix element
         for i in range(self.M):
             for j in range(self.M):
                 for k in range(self.M):
                     for l in range(self.M):
                         
-                        print('Apply operators ', i, j, k, l)
+                        print('Operator indices', i, j, k, l)
                         print('BRA BASIS')
                         basis1.print_info()
                         
@@ -192,7 +192,7 @@ class Hamiltonian:
                         
                         matrix_overlap = self.matrix_overlap_disc(i, j, k, l)
                     
-                        new_basis2, total_prefactor = self.act_H(basis2, i, j, k, l)
+                        new_basis2, total_prefactor = self.act_H(basis2, i, j, k, l)#(basis2, 1)
                         print('TRANSFORMED BASIS')
                         new_basis2.print_info()
                         print('Prefactor ', total_prefactor)
@@ -208,11 +208,21 @@ class Hamiltonian:
         for basis1 in self.basis:
             for basis2 in self.basis:
                 self.many_body_H[basis1.index, basis2.index] = self.H_element(basis1, basis2)
-
-    def print_Hamiltonian(self):
-        print(self.many_body_H)
-        return
+    def symmetrise_Hamiltonian(self):
+        # Reordering basis states might result in symmetrix matrix?
+        # Rubbish
+        self.many_body_H = np.matmul(self.many_body_H, self.many_body_H.T)
+        return self.many_body_H
     
+    def print_Hamiltonian(self):
+        print('Many-body Hamiltonian')
+        print('---------------------')
+        for basis1 in self.basis:
+            for basis2 in self.basis:
+                print("%2.4f"%self.many_body_H[basis1.index, basis2.index], end="         ")
+            print()
+        print('---------------------')
+
     def diagonalise(self):
         '''
         Carry out exact diagonalisation
@@ -232,6 +242,9 @@ H = Hamiltonian(N, M)
 #print(H.fock_size())
 H.generate_basis()
 H.construct_Hamiltonian()
+H.print_Hamiltonian()
+H.show_basis()
+H.symmetrise_Hamiltonian()
 H.print_Hamiltonian()
 #H.H_element(H.basis[0], H.basis[2])
 
