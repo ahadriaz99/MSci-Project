@@ -222,7 +222,7 @@ def Disc_BEC(Hamiltonian):
     def __init__(self, N, M):
         super().__init__(N, M)
                 
-N = 6
+N = 3
 M = 2
 H = Hamiltonian(N, M)
 
@@ -231,7 +231,7 @@ H = Hamiltonian(N, M)
 
 #print(H.fock_size())
 H.generate_basis()
-H.basis_overlap()
+#H.basis_overlap()
 H.construct_Hamiltonian()
 H.print_Hamiltonian()
 #H.H_element(H.basis[0], H.basis[2])
