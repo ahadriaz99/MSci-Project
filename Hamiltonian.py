@@ -94,28 +94,15 @@ class Hamiltonian:
         for i in range(len(config_input)):
             assert len(config_input[i]) == self.M # Check correct input format
             self.basis.append(fock_vector(self.N, self.M, config_input[i],index=i)) # Create fock vectors
-            print(config_input[i], i)
-            
-    def basis_overlap(self)
-        '''
-        Form overlap between basis states --> See if basis is non-orthogonal,
-        if the returne matrix is non-diagonal
-        '''
+            #print(config_input[i], i)
+    def show_basis(self):
+        print('Many-body configurations')
+        print('------------------------')
+        for basis in self.basis:
+            basis.print_info()
+        print('------------------------')
         
-        assert self.basis != []
         
-        basis_overlap = np.array((self.fock_size(), self.fock_size()))
-        
-        for basis1 in self.basis:
-            for basis2 in self.basis:
-                basis_overlap[basis1.index, basis2.index] = self.overlap(basis1, basis2)
-        
-        return basis_overlap
-        
-    def basis_orthogonalisation(self):
-        '''
-        Create new basis vectors by some orthogonalisation procedure
-        '''
             
     def act_H(self, basis, i, j, k, l):
         '''
@@ -168,7 +155,6 @@ class Hamiltonian:
         Construct many-body matrix elements for disc Hamiltonian
         '''
         V0 = 1
-
         return 1#Dirac_Delta(i+j, k+l)*V0*math.factorial(i+l)/2**(i+j)
         
     def H_element(self, basis1, basis2):
@@ -232,7 +218,7 @@ def Disc_BEC(Hamiltonian):
     def __init__(self, N, M):
         super().__init__(N, M)
                 
-N = 3
+N = 4
 M = 2
 H = Hamiltonian(N, M)
 
