@@ -61,14 +61,6 @@ class fock_vector:
         #Optimised dictionary construction
                 
         occups = []
-        '''
-        self.occup_basis = np.array(np.where(occupations!= 0))
-        print(self.occup_basis)
-        #print(occupations[np.argwhere(occupations != 0)])
-        occups = np.dstack(np.where(occupations != 0), \
-                           occupations[tuple(np.array(np.where(occupations!=0)))])
-        self.occups = dict(np.array(occups))
-        '''
         
         for i in range(len(occupations)):
             # Only store non-zero occupations
