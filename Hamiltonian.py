@@ -96,7 +96,7 @@ class Hamiltonian:
             self.basis.append(fock_vector(self.N, self.M, config_input[i],index=i)) # Create fock vectors
             print(config_input[i], i)
             
-    def basis_overlap(self)
+    def basis_overlap(self):
         '''
         Form overlap between basis states --> See if basis is non-orthogonal,
         if the returne matrix is non-diagonal
@@ -104,7 +104,7 @@ class Hamiltonian:
         
         assert self.basis != []
         
-        basis_overlap = np.array((self.fock_size(), self.fock_size()))
+        basis_overlap = np.zeros((self.fock_size(), self.fock_size()))
         
         for basis1 in self.basis:
             for basis2 in self.basis:
@@ -222,7 +222,7 @@ def Disc_BEC(Hamiltonian):
     def __init__(self, N, M):
         super().__init__(N, M)
                 
-N = 3
+N = 6
 M = 2
 H = Hamiltonian(N, M)
 
@@ -231,6 +231,7 @@ H = Hamiltonian(N, M)
 
 #print(H.fock_size())
 H.generate_basis()
+H.basis_overlap()
 H.construct_Hamiltonian()
 H.print_Hamiltonian()
 #H.H_element(H.basis[0], H.basis[2])
