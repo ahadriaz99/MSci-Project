@@ -30,6 +30,8 @@ class Hamiltonian:
     Hamiltonians in bosonic Fock space basis
     '''
     def __init__(self, N, M):
+    
+        self.tolerance = 1e-8 # Numerical tolerance
         
         self.N = N # Total number of bosons/excitations
         self.M = M # Total number of single particle basis states
@@ -59,29 +61,21 @@ class Hamiltonian:
         orthonormal
         '''
         
-        if (fock_basis1.is_vacuum() or fock_basis2.is_vacuum()):
+        if fock_basis1.is_vacuum() and fock_basis2.is_vacuum():
+            return 1
+        elif fock_basis1.is_vacuum() or fock_basis2.is_vacuum():
             return 0
         
-        # First calculate orderings of excitations for
-        # each basis state
-        
-        #print('Basis1', fock_basis1.occup_basis)
-        #print('Basis2', fock_basis2.occup_basis)
-
-        product = 1
-        # NOT WORKING
-        if (fock_basis1.occups.keys() != fock_basis2.occups.keys()):
+        if fock_basis1.occups != fock_basis2.occups:
             return 0
         else:
-        # We have ensured occupied bases are the same
-            for i in fock_basis1.occup_basis:
-                # For orthonormal SP states, basis mismatch renders overlap to zero
-                # Calculate orderings of bosons in SP basis states
-                product *= math.factorial(fock_basis1.occups[i])*\
-                           math.factorial(fock_basis2.occups[i])
-            
-            return 1/np.sqrt(product)
-        
+            overlap = 1
+            #print(fock_basis1.occups)
+            for basis in fock_basis1.occups.values():
+                #print(basis)
+                overlap *= 1/math.factorial(basis)
+        return overlap
+                
 
     def generate_basis(self):
         '''
@@ -95,6 +89,15 @@ class Hamiltonian:
             assert len(config_input[i]) == self.M # Check correct input format
             self.basis.append(fock_vector(self.N, self.M, config_input[i],index=i)) # Create fock vectors
             #print(config_input[i], i)
+            
+    def basis_overlap(self):
+        assert (self.basis != [])
+        basis_overlap = np.zeros((self.fock_size(), self.fock_size()))
+        for basis1 in self.basis:
+            for basis2 in self.basis:
+                basis_overlap[basis1.index, basis2.index] = self.overlap(basis1, basis2)
+        return basis_overlap
+    
     def show_basis(self):
         print('Many-body configurations')
         print('------------------------')
@@ -102,8 +105,29 @@ class Hamiltonian:
             basis.print_info()
         print('------------------------')
         
+    def annihilate(self, basis, i, j):
+        '''
+        Apply annihilation on a KET vector on indices i, j
+        '''
+        assert np.array([i, j]).all() < self.M and np.array([i, j]).all() >= 0
         
-            
+        result_basis_1 = None
+        result_basis = None
+        
+        prefactor_1 = 1
+        prefactor_2 = 1
+
+        vacuum = fock_vector(self.N, self.M, np.zeros(self.M))
+        if (j not in basis.occup_basis):
+            return (vacuum, 0)
+        result_basis_1, prefactor_1 = basis.annihilate(j)
+        if (i not in result_basis_1.occup_basis):
+            return (vacuum, 0)
+        result_basis, prefactor_2 = result_basis_1.annihilate(i)
+        
+        return (result_basis, prefactor_1*prefactor_2)
+        
+
     def act_H(self, basis, i, j, k, l):
         '''
         Act Hamiltonian b_i^dagger b_j^dagger b_k b_l on some fock basis state
@@ -118,21 +142,10 @@ class Hamiltonian:
         prefactor_3 = 1
         prefactor_4 = 1
         total_prefactor = 1
-        '''
-        # ONLY FOR TESTING
-        if i in basis.occup_basis:
-            result_basis_1, prefactor_1 = basis.annihilate(i)
-            total_prefactor *= prefactor_1
-            result_basis, prefactor_2 = result_basis_1.creation(i)
-            total_prefactor *= prefactor_2
-        else:
-            return (fock_vector(self.N, self.M, np.zeros(self.M)), 0)
-        '''
+
         assert np.array([i, j, k, l]).all() < self.M and np.array([i, j, k, l]).all() >= 0
 
         vacuum = fock_vector(self.N, self.M, np.zeros(self.M))
-        #if ((i+j) != (k+l)):
-        #    return (vacuum, 0)
         if (l not in basis.occup_basis):
             return (vacuum, 0)
         result_basis_1, prefactor_1 = basis.annihilate(l)
@@ -146,8 +159,7 @@ class Hamiltonian:
         #print(sum(result_basis.occups.values()), self.N)
         # Assert that final vector is an element of number conserving Fock space
         assert sum(result_basis.occups.values()) == self.N
-        
-        
+    
         return (result_basis, total_prefactor)
         
     def matrix_overlap_disc(self, i, j, k, l):
@@ -168,22 +180,24 @@ class Hamiltonian:
             for j in range(self.M):
                 for k in range(self.M):
                     for l in range(self.M):
-                        
                         print('Operator indices', i, j, k, l)
                         print('BRA BASIS')
                         basis1.print_info()
-                        
                         print('KET BASIS')
                         basis2.print_info()
                         
                         matrix_overlap = self.matrix_overlap_disc(i, j, k, l)
-                    
-                        new_basis2, total_prefactor = self.act_H(basis2, i, j, k, l)#(basis2, 1)
-                        print('TRANSFORMED BASIS')
+                        # Apply annihlation on basis 1 BRA
+                        new_basis1, total_prefactor_1 = self.annihilate(basis1, j, i)
+                        # Apply annihilation on basis 1 KET
+                        new_basis2, total_prefactor_2 = self.annihilate(basis2, k, l)
+                        print('TRANSFORMED BASIS1')
+                        new_basis1.print_info()
+                        print('TRANSFORMED BASIS2')
                         new_basis2.print_info()
-                        print('Prefactor ', total_prefactor)
-                        element += matrix_overlap*self.overlap(basis1, new_basis2)*total_prefactor
-                        print('Overlap: ', self.overlap(basis1, new_basis2))
+                        print('Prefactor ', total_prefactor_1*total_prefactor_2)
+                        element += 0.5*matrix_overlap*self.overlap(new_basis1, new_basis2)*total_prefactor_1*total_prefactor_2
+                        print('Overlap: ', self.overlap(new_basis1, new_basis2))
         return element
         
     def construct_Hamiltonian(self):
@@ -194,43 +208,51 @@ class Hamiltonian:
         for basis1 in self.basis:
             for basis2 in self.basis:
                 self.many_body_H[basis1.index, basis2.index] = self.H_element(basis1, basis2)
-    def symmetrise_Hamiltonian(self):
-        # Reordering basis states might result in symmetrix matrix?
-        # Rubbish
-        self.many_body_H = np.matmul(self.many_body_H, self.many_body_H.T)
-        return self.many_body_H
+                
+    def print_matrix(self, matrix):
+        
+        isDiagonal = True
+        isSymmetric = True
     
-    def print_Hamiltonian(self):
-        print('Many-body Hamiltonian')
+        print('Many-body matrix')
         print('---------------------')
         for basis1 in self.basis:
             for basis2 in self.basis:
-                print("%2.4f"%self.many_body_H[basis1.index, basis2.index], end="         ")
+                print("%2.4f"%matrix[basis1.index, basis2.index], end="         ")
+                if (abs(matrix[basis1.index, basis2.index] - matrix[basis2.index, basis1.index]) > self.tolerance):
+                    isSymmetric = False
+                if abs(matrix[basis1.index, basis2.index]) > self.tolerance and basis1.index != basis2.index:
+                    isDiagonal = True
             print()
+        print('Diagonal? ', isDiagonal)
+        print('Symmetric? ', isSymmetric)
         print('---------------------')
 
     def diagonalise(self):
         '''
         Carry out exact diagonalisation
         '''
-                    
-def Disc_BEC(Hamiltonian):
-    def __init__(self, N, M):
-        super().__init__(N, M)
+        return
+        
+def test_overlap():
+    N = 5
+    M = 4
+    H = Hamiltonian(N, M)
+    vector1 = fock_vector(N, M, [4, 1, 0, 0])
+    vector2 = fock_vector(N, M, [2, 3, 0, 0])
+    vector3 = fock_vector(N, M, [2, 0, 1, 2])
+    vector4 = fock_vector(N, M, [4, 1, 0, 0])
+    print(H.overlap(vector1, vector2))
+    print(H.overlap(vector1, vector3))
+    print(H.overlap(vector1, vector4))
+    print(H.overlap(vector2, vector3))
                 
-N = 4
+N = 10
 M = 2
 H = Hamiltonian(N, M)
 
-
-                
-
-#print(H.fock_size())
 H.generate_basis()
 H.construct_Hamiltonian()
-H.print_Hamiltonian()
-H.show_basis()
-H.symmetrise_Hamiltonian()
-H.print_Hamiltonian()
-#H.H_element(H.basis[0], H.basis[2])
-
+H.print_matrix(H.many_body_H)
+#H.show_basis()
+#H.print_matrix(H.basis_overlap())
