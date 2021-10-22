@@ -7,6 +7,8 @@ Created on Fri Oct 22 14:09:25 2021
 
 from Hamiltonian import Hamiltonian
 
+import numpy as np
+
 #H = ham.Hamiltonian(2,3)
 
 
@@ -38,6 +40,7 @@ class sub_Hamiltonian(Hamiltonian):
     
     def __init__(self,N,M):
         super().__init__(N,M)
+        self.tolerance = 1e-10
           
     def matrix_overlap_disc(self, i, j, k, l):
         '''
@@ -59,41 +62,60 @@ class sub_Hamiltonian(Hamiltonian):
         element = 0 # Matrix element
         # Loop over all possible single-particle state indices
         # NEEDS OPTIMISATION
-        for i in range(self.M):
-            for j in range(self.M):
-                for k in range(self.M):
-                    for l in range(self.M):
-                    
-                        #print('Operator indices', i, j, k, l)
-                        #print('BRA BASIS')
-                        #basis1.print_info()
-                        #print('KET BASIS')
-                        #basis2.print_info()
-                        
-                        # Calculate scalar integral overlaps
-                        matrix_overlap = self.matrix_overlap_disc(i, j, k, l)
-                        if (matrix_overlap != 0):
-                            # Apply annihlation on basis 1 BRA -> (i, j) must be reversed
-                            new_basis1, total_prefactor_1 = self.annihilate(basis1, j, i)
-                            # Apply annihilation on basis 2 KET
-                            new_basis2, total_prefactor_2 = self.annihilate(basis2, k, l)
-                            #print('TRANSFORMED BASIS1')
-                            #new_basis1.print_info()
-                            #print('TRANSFORMED BASIS2')
-                            #new_basis2.print_info()
-                            #print('Prefactor ', total_prefactor_1*total_prefactor_2)
-                            # Assemble matrix element contribution
-                            element += 0.5*matrix_overlap*self.overlap(new_basis1, new_basis2)*total_prefactor_1*total_prefactor_2
-                            #print('Overlap: ', self.overlap(new_basis1, new_basis2))
+
         return element
 
-H = sub_Hamiltonian(3,2)
+class BoseHubbard1D(Hamiltonian):
+    def __init__(self,N,M, t, U, mu):
+        super().__init__(N,M)
+        
+        self.t = t
+        self.U = U
+        self.mu = mu
+        
+    def H_element(self, basis1, basis2):
+        element = 0
+        for i in range(self.M):
+            if (i < self.M-1):
+                j = i+1
+            else:
+                j = 0
+            
+            new_basis1, pref1 = basis1.annihilate(i)
+            new_basis2, pref2 = basis2.annihilate(j)
+            
+            element += -self.t*self.overlap(new_basis1, new_basis2)*pref1*pref2
+            
+            new_basis1, pref1 = basis1.annihilate(j)
+            new_basis2, pref2 = basis2.annihilate(i)
+            
+            element += -self.t*self.overlap(new_basis1, new_basis2)*pref1*pref2
+            
+            if (i in basis2.occup_basis):
+                element += -self.mu*basis2.occups[i]*self.overlap(basis1, basis2)
+                element += self.U/2*(basis2.occups[i])*(basis2.occups[i]-1)*self.overlap(basis1, basis2)
+        
+        return element
 
+    def one_particle_spectrum(self):
+            '''
+            Construct Bloch waves as a non-interacting spectrum
+            '''
+            n = np.linspace(0, self.M-1, self.M)
+            print('n ', n)
+            H_analytic = -2*self.t*np.array(np.cos(2*np.pi*n/self.M))
+            return H_analytic
+        
+H = BoseHubbard1D(3, 5, t=1, U=0, mu=0)
 
 H.generate_basis()
 H.show_basis()
 H.construct_Hamiltonian()
-H.print_matrix(H.many_body_H)
-
+#H.print_matrix(H.many_body_H)
+evalues, evecs = H.diagonalise()
+print('Hamiltonian eigenvalues ')
+print(evalues)
+print(H.one_particle_spectrum())
+#H.print_matrix(H.basis_overlap())
 #H.show_basis()
 #H.print_matrix(H.basis_overlap())
