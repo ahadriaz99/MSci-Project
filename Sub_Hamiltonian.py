@@ -87,7 +87,7 @@ class sub_Hamiltonian(Hamiltonian):
                             #print('Overlap: ', self.overlap(new_basis1, new_basis2))
         return element
 
-H = sub_Hamiltonian(3,2)
+H = sub_Hamiltonian(4,2)
 
 
 H.generate_basis()
