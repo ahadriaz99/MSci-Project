@@ -69,6 +69,7 @@ class fock_vector:
                 self.occup_basis.append(i)
                 # Store index and occupation
                 occups.append((i, occupations[i]))
+                
         # Create dictionary of occupations
         # indexed by occupied single particle indices
         

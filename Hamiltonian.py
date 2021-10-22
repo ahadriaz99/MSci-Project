@@ -14,6 +14,7 @@ import copy
 from Fock_vector import fock_vector
 import Ryser_Algorithm as ryser
 import config as configs
+from numpy import linalg as la
 
 def Dirac_Delta(a, b):
     '''
@@ -31,7 +32,7 @@ class Hamiltonian:
     '''
     def __init__(self, N, M):
     
-        self.tolerance = 1e-8 # Numerical tolerance
+        self.tolerance = 1e-8 # Numerical tolerance on equalities...etc.
         
         self.N = N # Total number of bosons/excitations
         self.M = M # Total number of single particle basis states
@@ -48,7 +49,12 @@ class Hamiltonian:
         # Array of Fock basis vectors forming Fock space
         self.basis = []
         
+        # Many-body Hamiltonian -> OPTIMISATION
         self.many_body_H = np.zeros((self.fock_size, self.fock_size))
+        
+        # Ground state properties
+        self.e_ground = None
+        self.e_vector_ground = None
         
     
     def overlap(self, fock_basis1, fock_basis2):
@@ -128,7 +134,8 @@ class Hamiltonian:
         Construct many-body matrix elements for disc Hamiltonian
         '''
         V0 = 1
-        return 1#Dirac_Delta(i+j, k+l)*V0*math.factorial(i+l)/2**(i+j)
+        return Dirac_Delta(i+j, k+l)*V0*math.factorial(i+j)/2**(i+j)/\
+               np.sqrt(math.factorial(i)*math.factorial(j)*math.factorial(k)*math.factorial(l))
         
     def H_element(self, basis1, basis2):
         '''
@@ -140,33 +147,39 @@ class Hamiltonian:
         #print('Basis 2')
         #basis2.print_info()
         element = 0 # Matrix element
+        # Loop over all possible single-particle state indices
+        # NEEDS OPTIMISATION
         for i in range(self.M):
             for j in range(self.M):
                 for k in range(self.M):
                     for l in range(self.M):
+                    
                         #print('Operator indices', i, j, k, l)
                         #print('BRA BASIS')
                         #basis1.print_info()
                         #print('KET BASIS')
                         #basis2.print_info()
                         
+                        # Calculate scalar integral overlaps
                         matrix_overlap = self.matrix_overlap_disc(i, j, k, l)
-                        # Apply annihlation on basis 1 BRA (i, j) must be reversed
-                        new_basis1, total_prefactor_1 = self.annihilate(basis1, j, i)
-                        # Apply annihilation on basis 1 KET
-                        new_basis2, total_prefactor_2 = self.annihilate(basis2, k, l)
-                        #print('TRANSFORMED BASIS1')
-                        #new_basis1.print_info()
-                        #print('TRANSFORMED BASIS2')
-                        #new_basis2.print_info()
-                        #print('Prefactor ', total_prefactor_1*total_prefactor_2)
-                        element += 0.5*matrix_overlap*self.overlap(new_basis1, new_basis2)*total_prefactor_1*total_prefactor_2
-                        #print('Overlap: ', self.overlap(new_basis1, new_basis2))
+                        if (matrix_overlap != 0):
+                            # Apply annihlation on basis 1 BRA -> (i, j) must be reversed
+                            new_basis1, total_prefactor_1 = self.annihilate(basis1, j, i)
+                            # Apply annihilation on basis 2 KET
+                            new_basis2, total_prefactor_2 = self.annihilate(basis2, k, l)
+                            #print('TRANSFORMED BASIS1')
+                            #new_basis1.print_info()
+                            #print('TRANSFORMED BASIS2')
+                            #new_basis2.print_info()
+                            #print('Prefactor ', total_prefactor_1*total_prefactor_2)
+                            # Assemble matrix element contribution
+                            element += 0.5*matrix_overlap*self.overlap(new_basis1, new_basis2)*total_prefactor_1*total_prefactor_2
+                            #print('Overlap: ', self.overlap(new_basis1, new_basis2))
         return element
         
     def construct_Hamiltonian(self):
         '''
-        Construct many-body Hamiltonian explicitly -- OPTIMISATION!
+        Construct many-body Hamiltonian explicitly -- OPTIMISATION NEEDED!
         '''
         assert len(self.basis) == self.fock_size # Check if basis generation has been invoked
         i = 0
@@ -199,9 +212,39 @@ class Hamiltonian:
 
     def diagonalise(self):
         '''
-        Carry out exact diagonalisation
+        Carry out exact diagonalisation to produce ground state energy
+        and configuration
         '''
-        return
+        evalues, evectors = la.eigh(self.many_body_H)
+        e_ground = evalues.min()
+        
+        self.e_ground, self.e_vector_ground = e_ground, evectors[np.where(evalues == e_ground)]
+        
+        return evalues, evectors
+        
+    def check_sign_problem(self):
+        '''
+        Diagonalise H' = -(1-delta_{ij})|H_{ij}| + H_{ij}delta_{ij}
+        transformed Hamiltonian to check severity of Monte Carlo sign problem
+        Compare lowest eigenvalues of H and H' -- for moderate sign problem,
+        the difference should be small
+        '''
+        assert self.e_ground is not None
+        H_prime = -abs(self.many_body_H)
+        H_prime[np.diag_indices(self.fock_size)] = np.diag(self.many_body_H)
+        #self.print_matrix(H_prime)
+        
+        evalues, evectors = la.eigh(H_prime)
+        e_ground_prime = evalues.min()
+        
+        print('Sign problem analysis')
+        print('---------------------')
+        print(self.e_ground, 'Ground state of phsyical H [V0]')
+        print(e_ground_prime, 'Ground state of unphysical H\' [V0]')
+        
+        return e_ground_prime
+        
+        
         
 def test_overlap():
     N = 5
@@ -216,13 +259,21 @@ def test_overlap():
     print(H.overlap(vector1, vector4))
     print(H.overlap(vector2, vector3))
                 
-N = 10
-M = 5
+N = 3
+M = 6
 H = Hamiltonian(N, M)
 
 H.generate_basis()
-#H.basis_overlap()
+H.show_basis()
 H.construct_Hamiltonian()
-H.print_matrix(H.many_body_H)
+#H.print_matrix(H.many_body_H)
+
 #H.show_basis()
 #H.print_matrix(H.basis_overlap())
+
+evalues, evecs = H.diagonalise()
+print('Hamiltonian eigenvalues [V0]')
+print(evalues)
+print('Ground state energy [V0] ', H.e_ground)
+
+H.check_sign_problem()
