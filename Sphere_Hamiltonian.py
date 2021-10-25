@@ -26,6 +26,7 @@ def Dirac_Delta(a, b):
 class sphere_Hamiltonian(Hamiltonian):
     
     def __init__(self,N,M,S):
+        '''Additional argument for angular momentum S'''
         super().__init__(N,M)
         self.S = S
         self.tolerance = 1e-10
