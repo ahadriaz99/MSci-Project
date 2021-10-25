@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Oct 14 15:20:35 2021
+Function to generated repeated combinatrics of bosonic configuration
 
-@author: Owner
+19/10/21
+
+by Marcell Dorian Kovacs and Ahad Riaz
 """
 import numpy as np
 from itertools import combinations
