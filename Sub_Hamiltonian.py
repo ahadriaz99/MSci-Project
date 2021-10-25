@@ -110,14 +110,17 @@ class BoseHubbard1D(Hamiltonian):
         
 H = BoseHubbard1D(2, 5, t=1, U=0, mu=0)
 
+
 H.generate_basis()
 H.show_basis()
 H.construct_Hamiltonian()
-#H.print_matrix(H.many_body_H)
+H.print_matrix(H.many_body_H)
 evalues, evecs = H.diagonalise()
 print('Hamiltonian eigenvalues ')
 print(evalues)
+print(evecs[np.where(evalues.min())])
 print(H.one_particle_spectrum())
+
 #H.print_matrix(H.basis_overlap())
 #H.show_basis()
 #H.print_matrix(H.basis_overlap())
