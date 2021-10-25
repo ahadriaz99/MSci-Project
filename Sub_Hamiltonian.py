@@ -8,6 +8,8 @@ Created on Fri Oct 22 14:09:25 2021
 from Hamiltonian import Hamiltonian
 
 import numpy as np
+import math
+
 
 #H = ham.Hamiltonian(2,3)
 
@@ -106,7 +108,7 @@ class BoseHubbard1D(Hamiltonian):
             H_analytic = -2*self.t*np.array(np.cos(2*np.pi*n/self.M))
             return H_analytic
         
-H = BoseHubbard1D(3, 5, t=1, U=0, mu=0)
+H = BoseHubbard1D(2, 5, t=1, U=0, mu=0)
 
 H.generate_basis()
 H.show_basis()

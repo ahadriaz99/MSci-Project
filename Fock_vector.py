@@ -3,7 +3,7 @@ Class to generate bosonic Hamiltonians in occupation number representation
 
 13/10/21
 
-by Marcell Dorian Kovacs
+by Marcell Dorian Kovacs and Ahad Riaz
 '''
 
 import numpy as np
