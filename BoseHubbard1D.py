@@ -62,12 +62,12 @@ class BoseHubbard1D(Hamiltonian):
             H_analytic = -2*self.t*np.array(np.cos(2*np.pi*n/self.M))
             return H_analytic
         
-H = BoseHubbard1D(1, 4, t=1, U=0, mu=0)
+H = BoseHubbard1D(2, 3, t=1, U=0, mu=0)
 
 H.generate_basis()
 H.show_basis()
 H.construct_Hamiltonian()
-#H.print_matrix(H.many_body_H)
+H.print_matrix(H.many_body_H)
 evalues, evecs = H.diagonalise()
 print('Hamiltonian eigenvalues ')
 print(evalues)
