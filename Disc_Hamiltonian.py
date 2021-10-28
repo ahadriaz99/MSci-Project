@@ -6,12 +6,16 @@ SubClass to generate the many body Hamiltonian for disc geometry
 
 by Marcell Dorian Kovacs and Ahad Riaz
 """
-
 from Hamiltonian import Hamiltonian
-
 import numpy as np
 import math
+import matplotlib.pyplot as plt
+import copy
 
+from Fock_vector import fock_vector
+import Ryser_Algorithm as ryser
+import config as configs
+from numpy import linalg as la
 
 
 def Dirac_Delta(a, b):
@@ -25,9 +29,33 @@ def Dirac_Delta(a, b):
     
 class disc_Hamiltonian(Hamiltonian):
     
-    def __init__(self,N,M):
+    def __init__(self,N, M, L):
         super().__init__(N,M)
         self.tolerance = 1e-10
+        self. L = L # Restrict total angular momentum for each Fock vectors
+    
+    def generate_basis(self):
+        '''
+        Generate many-body basis states from repeated combinations
+        and index them
+        '''
+        config_input = np.array(configs.configurations(self.N, self.M)) # Calculate repeated combinations
+        assert len(config_input) == self.fock_size # Check dimensionality
+        
+        index = 0
+        for i in range(len(config_input)):
+            print(i)
+            assert len(config_input[i]) == self.M # Check correct input format
+            vector = fock_vector(self.N, self.M, config_input[i])
+            # Only add restricted ang. mom. bases to the Fock spaces
+            if(vector.ang_mom() == self.L):
+                self.basis.append(fock_vector(self.N, self.M, config_input[i],index=index)) # Create fock vectors
+                vector.print_info()
+                index += 1
+        self.fock_size = index
+        self.many_body_H = np.zeros((self.fock_size, self.fock_size))
+
+        #print(config_input[i], i)
           
     def matrix_overlap_disc(self, i, j, k, l):
         '''
@@ -77,12 +105,14 @@ class disc_Hamiltonian(Hamiltonian):
                             #print('Overlap: ', self.overlap(new_basis1, new_basis2))
         return element
 
-H = disc_Hamiltonian(4,2)
+#H = disc_Hamiltonian(N=10,M=10,L=10)
 
-H.generate_basis()
-H.show_basis()
-H.construct_Hamiltonian()
-H.print_matrix(H.many_body_H)
-#evalues, evecs = H.diagonalise()
-print('Hamiltonian eigenvalues ')
-print(evalues)
+configs.configurations(N=10, M=10)
+#H.generate_basis()
+#H.show_basis()
+#H.print_matrix(H.construct_Hamiltonian())
+#evalues, evecs = H.diagonalise()#
+#print('Hamiltonian eigenvalues [V0]')
+#print(evalues)
+#print('Ground state energy [V0] ', H.e_ground)
+#H.check_sign_problem()

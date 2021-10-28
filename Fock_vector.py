@@ -78,6 +78,18 @@ class fock_vector:
 
     def is_vacuum(self):
         return self.occup_basis == []
+        
+    def ang_mom(self):
+        '''
+        Return angular momentum of state from single particle occupations
+        Note that the occupatied single particle states are indexed by single particle
+        angular momentum, hence the sum
+        '''
+        ang_mom = 0
+        for i in self.occup_basis:
+            ang_mom = self.occups[i]*i
+        print('Ang mom. ', ang_mom)
+        return ang_mom
     def annihilate(self, index):
         '''
         Method to carry out annihilation on a Fock ket

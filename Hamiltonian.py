@@ -190,7 +190,8 @@ class Hamiltonian:
                 i += 1
                 if (i % 100 == 0):
                     print('Hamiltonian construction progress [%]', (i/(self.fock_size**2))*100)
-                
+        
+        return self.many_body_H
                 
     def print_matrix(self, matrix):
         
