@@ -71,12 +71,12 @@ class Hamiltonian:
         if fock_basis1.occups != fock_basis2.occups:
             return 0
         else:
-            overlap = 1
+            return 1
             #print(fock_basis1.occups)
-            for basis in fock_basis1.occups.values():
-                #print(basis)
-                overlap *= 1/math.factorial(basis)
-        return overlap
+            #for basis in fock_basis1.occups.values():
+            #    #print(basis)
+            #    overlap *= 1/math.factorial(basis)
+        #return overlap
                 
 
     def generate_basis(self):
