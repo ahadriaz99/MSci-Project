@@ -63,6 +63,8 @@ class disc_Hamiltonian(Hamiltonian):
         Construct many-body matrix elements for disc Hamiltonian
         '''
         V0 = 1
+        #print(i, j, k, l)
+        #print(math.factorial(i)*math.factorial(j)*math.factorial(k)*math.factorial(l))
         return Dirac_Delta(i+j, k+l)*V0*math.factorial(i+j)/2**(i+j)/\
                np.sqrt(float(math.factorial(i)*math.factorial(j)*math.factorial(k)*math.factorial(l)))
         
@@ -82,7 +84,6 @@ class disc_Hamiltonian(Hamiltonian):
             for j in range(self.M):
                 for k in range(self.M):
                     for l in range(self.M):
-                    
                         #print('Operator indices', i, j, k, l)
                         #print('BRA BASIS')
                         #basis1.print_info()
@@ -117,3 +118,16 @@ print('Hamiltonian eigenvalues [V0]')
 print(evalues)
 print('Ground state energy [V0] ', H.e_ground)
 H.check_sign_problem()
+
+
+#print(configs.configurations(N=3, M=10))
+H.generate_basis()
+H.show_basis()
+H.construct_Hamiltonian()
+H.print_matrix(H.many_body_H)
+#evalues, evecs = H.diagonalise()#
+#print('Hamiltonian eigenvalues [V0]')
+#print(evalues)
+#print('Ground state energy [V0] ', H.e_ground)
+#H.check_sign_problem()
+>>>>>>> 5913d15 (Minor updates)

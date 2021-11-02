@@ -30,6 +30,7 @@ def Dirac_Delta(a, b):
     
 class sphere_Hamiltonian(Hamiltonian):
     
+<<<<<<< HEAD
     def __init__(self,N,M,S,L):
         '''Additional argument for angular momentum S'''
         
@@ -38,6 +39,7 @@ class sphere_Hamiltonian(Hamiltonian):
         self.M = M
 
         super().__init__(N,M)
+
         self.tolerance = 1e-10
         self.L = L
           
@@ -93,10 +95,10 @@ class sphere_Hamiltonian(Hamiltonian):
         element = 0 # Matrix element
         # Loop over all possible single-particle state indices
         # NEEDS OPTIMISATION
-        for i in range(self.M):
-            for j in range(self.M):
-                for k in range(self.M):
-                    for l in range(self.M):
+        for i in range(-self.S, self.S):
+            for j in range(-self.S, self.S):
+                for k in range(-self.S, self.S):
+                    for l in range(-self.S, self.S):
                     
                         #print('Operator indices', i, j, k, l)
                         #print('BRA BASIS')
@@ -122,6 +124,7 @@ class sphere_Hamiltonian(Hamiltonian):
         return element
 
 H = sphere_Hamiltonian(4,3,2,7)
+
 
 H.generate_basis()
 H.show_basis()

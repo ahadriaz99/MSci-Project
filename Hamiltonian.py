@@ -137,7 +137,7 @@ class Hamiltonian:
         #return Dirac_Delta(i+j, k+l)*V0*math.factorial(i+j)/2**(i+j)/\
         #       np.sqrt(math.factorial(i)*math.factorial(j)*math.factorial(k)*math.factorial(l))
         
-    #def H_element(self, basis1, basis2):
+    def H_element(self, basis1, basis2):
         '''
         Calculate matrix element between 2 many-body basis states
         '''
