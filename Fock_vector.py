@@ -22,7 +22,7 @@ def Dirac_Delta(a, b):
         return 0
 
 class fock_vector:
-    def __init__(self, N, M, occupations, index=None):
+    def __init__(self, N, M, occupations, S=0, index=None):
         '''
         Class for representing a bosonic Fock space vectors in
         occupation number representation
@@ -34,6 +34,13 @@ class fock_vector:
 
         self.N = N
         self.M = M
+        self.S = 0
+        
+        if (S != 0):
+            assert M == 2*S + 1
+            self.S = S
+            self.M = 2*self.S + 1
+        
         # Vector representing the occupations of each SP state
         # as dictionary
         self.occups = {}
@@ -87,8 +94,8 @@ class fock_vector:
         '''
         ang_mom = 0
         for i in self.occup_basis:
-            ang_mom += self.occups[i]*i
-        print('Ang mom. ', ang_mom)
+            ang_mom += self.occups[i]*(i-self.S)
+        #print('Ang mom. ', ang_mom)
         return ang_mom
     
     def annihilate(self, index):
@@ -105,7 +112,7 @@ class fock_vector:
         if (index not in self.occup_basis):
             # No excitations on sought basis
             # Return vacuum
-            return (fock_vector(self.N, self.M, np.zeros(self.M)), 0)
+            return (fock_vector(self.N, self.M, np.zeros(self.M), S=self.S), 0)
         
         result_vec = copy.deepcopy(self)
         # Removing last boson from basis
@@ -153,6 +160,7 @@ class fock_vector:
         for i in self.occup_basis:
             value[i] = self.occups[i]
         print('State: ', value)
+        print('z-Ang.mom.', self.ang_mom())
         return value
         
 def test_init(N, M, occupations):

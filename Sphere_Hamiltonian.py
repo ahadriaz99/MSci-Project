@@ -30,15 +30,14 @@ def Dirac_Delta(a, b):
     
 class sphere_Hamiltonian(Hamiltonian):
     
-<<<<<<< HEAD
     def __init__(self,N,M,S,L):
         '''Additional argument for angular momentum S'''
-        
+        assert (2*S+1 == M)
         self.S = S
-        M = 2*S + 1
-        self.M = M
+        self.M = 2*self.S + 1
+        
 
-        super().__init__(N,M)
+        super().__init__(N,M,S)
 
         self.tolerance = 1e-10
         self.L = L
@@ -48,12 +47,12 @@ class sphere_Hamiltonian(Hamiltonian):
         Construct many-body matrix elements for disc Hamiltonian
         '''
         S = self.S
-        sum_SM = 0
+        sum_SM = 1
         
-        sum_SM += math.factorial(S + i) * math.factorial(S-i)
-        sum_SM += math.factorial(S + j) * math.factorial(S-j)
-        sum_SM += math.factorial(S + k) * math.factorial(S-k)
-        sum_SM += math.factorial(S + l) * math.factorial(S-l)
+        sum_SM *= math.factorial(S + i) * math.factorial(S-i)
+        sum_SM *= math.factorial(S + j) * math.factorial(S-j)
+        sum_SM *= math.factorial(S + k) * math.factorial(S-k)
+        sum_SM *= math.factorial(S + l) * math.factorial(S-l)
         
         #print(sum_SM)
         
@@ -72,13 +71,13 @@ class sphere_Hamiltonian(Hamiltonian):
         
         index = 0
         for i in range(len(config_input)):
-            print(i)
+            #print(i)
             assert len(config_input[i]) == self.M # Check correct input format
-            vector = fock_vector(self.N, self.M, config_input[i])
+            vector = fock_vector(self.N, self.M, config_input[i], S=self.S)
             # Only add restricted ang. mom. bases to the Fock spaces
             if(vector.ang_mom() == self.L):
-                self.basis.append(fock_vector(self.N, self.M, config_input[i],index=index)) # Create fock vectors
-                vector.print_info()
+                self.basis.append(fock_vector(self.N, self.M, config_input[i],index=index, S=self.S)) # Create fock vectors
+                #self.basis[-1].print_info()
                 index += 1
         self.fock_size = index
         self.many_body_H = np.zeros((self.fock_size, self.fock_size))
@@ -95,10 +94,10 @@ class sphere_Hamiltonian(Hamiltonian):
         element = 0 # Matrix element
         # Loop over all possible single-particle state indices
         # NEEDS OPTIMISATION
-        for i in range(-self.S, self.S):
-            for j in range(-self.S, self.S):
-                for k in range(-self.S, self.S):
-                    for l in range(-self.S, self.S):
+        for i in range(self.M):
+            for j in range(self.M):
+                for k in range(self.M):
+                    for l in range(self.M):
                     
                         #print('Operator indices', i, j, k, l)
                         #print('BRA BASIS')
@@ -107,7 +106,7 @@ class sphere_Hamiltonian(Hamiltonian):
                         #basis2.print_info()
                         
                         # Calculate scalar integral overlaps
-                        matrix_overlap = self.matrix_overlap_sphere(i, j, k, l)
+                        matrix_overlap = self.matrix_overlap_sphere(i-self.S, j-self.S, k-self.S, l-self.S)
                         if (matrix_overlap != 0):
                             # Apply annihlation on basis 1 BRA -> (i, j) must be reversed
                             new_basis1, total_prefactor_1 = self.annihilate(basis1, j, i)
@@ -122,17 +121,3 @@ class sphere_Hamiltonian(Hamiltonian):
                             element += 0.5*matrix_overlap*self.overlap(new_basis1, new_basis2)*total_prefactor_1*total_prefactor_2
                             #print('Overlap: ', self.overlap(new_basis1, new_basis2))
         return element
-
-H = sphere_Hamiltonian(4,3,2,7)
-
-
-H.generate_basis()
-H.show_basis()
-#%%H.construct_Hamiltonian()
-H.print_matrix(H.many_body_H)
-evalues, evecs = H.diagonalise()
-print('Hamiltonian eigenvalues [V0]')
-print(evalues)
-print('Ground state energy [V0] ', H.e_ground)
-H.check_sign_problem()
-

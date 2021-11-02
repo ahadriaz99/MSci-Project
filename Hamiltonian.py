@@ -30,12 +30,13 @@ class Hamiltonian:
     Core class for impelementing Full-Configuration Interaction
     Hamiltonians in bosonic Fock space basis
     '''
-    def __init__(self, N, M):
+    def __init__(self, N, M, S=0):
     
         self.tolerance = 1e-8 # Numerical tolerance on equalities...etc.
         
         self.N = N # Total number of bosons/excitations
         self.M = M # Total number of single particle basis states
+        self.S = S # Added for spherical Hamiltonian
         
         # Size of Hilbert space (no. repeated combinations available)
         self.fock_size =  int(math.factorial(self.N+self.M-1)/\
@@ -89,7 +90,7 @@ class Hamiltonian:
 
         for i in range(len(config_input)):
             assert len(config_input[i]) == self.M # Check correct input format
-            self.basis.append(fock_vector(self.N, self.M, config_input[i],index=i)) # Create fock vectors
+            self.basis.append(fock_vector(self.N, self.M, config_input[i],index=i, S=self.S)) # Create fock vectors
             #print(config_input[i], i)
             
     def basis_overlap(self):
@@ -211,6 +212,7 @@ class Hamiltonian:
         print('Diagonal? ', isDiagonal)
         print('Symmetric? ', isSymmetric)
         print('---------------------')
+        assert (isSymmetric)
 
     def diagonalise(self):
         '''
