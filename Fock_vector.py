@@ -87,9 +87,10 @@ class fock_vector:
         '''
         ang_mom = 0
         for i in self.occup_basis:
-            ang_mom = self.occups[i]*i
+            ang_mom += self.occups[i]*i
         print('Ang mom. ', ang_mom)
         return ang_mom
+    
     def annihilate(self, index):
         '''
         Method to carry out annihilation on a Fock ket

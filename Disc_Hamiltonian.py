@@ -40,6 +40,7 @@ class disc_Hamiltonian(Hamiltonian):
         and index them
         '''
         config_input = np.array(configs.configurations(self.N, self.M)) # Calculate repeated combinations
+        print('configurations', config_input)
         assert len(config_input) == self.fock_size # Check dimensionality
         
         index = 0
@@ -63,7 +64,7 @@ class disc_Hamiltonian(Hamiltonian):
         '''
         V0 = 1
         return Dirac_Delta(i+j, k+l)*V0*math.factorial(i+j)/2**(i+j)/\
-               np.sqrt(math.factorial(i)*math.factorial(j)*math.factorial(k)*math.factorial(l))
+               np.sqrt(float(math.factorial(i)*math.factorial(j)*math.factorial(k)*math.factorial(l)))
         
     def H_element(self, basis1, basis2):
         '''
@@ -105,14 +106,14 @@ class disc_Hamiltonian(Hamiltonian):
                             #print('Overlap: ', self.overlap(new_basis1, new_basis2))
         return element
 
-#H = disc_Hamiltonian(N=10,M=10,L=10)
+H = disc_Hamiltonian(N=4,M=5,L=3)
 
-configs.configurations(N=10, M=10)
-#H.generate_basis()
-#H.show_basis()
-#H.print_matrix(H.construct_Hamiltonian())
-#evalues, evecs = H.diagonalise()#
-#print('Hamiltonian eigenvalues [V0]')
-#print(evalues)
-#print('Ground state energy [V0] ', H.e_ground)
-#H.check_sign_problem()
+#configs.configurations(N=10, M=10)
+H.generate_basis()
+H.show_basis()
+H.print_matrix(H.construct_Hamiltonian())
+evalues, evecs = H.diagonalise()
+print('Hamiltonian eigenvalues [V0]')
+print(evalues)
+print('Ground state energy [V0] ', H.e_ground)
+H.check_sign_problem()
