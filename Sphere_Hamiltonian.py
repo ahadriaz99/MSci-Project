@@ -30,7 +30,7 @@ def Dirac_Delta(a, b):
     
 class sphere_Hamiltonian(Hamiltonian):
     
-    def __init__(self,N,M,S,L):
+    def __init__(self,N,M,S,L=-1):
         '''Additional argument for angular momentum S'''
         assert (2*S+1 == M)
         self.S = S
@@ -75,10 +75,10 @@ class sphere_Hamiltonian(Hamiltonian):
             assert len(config_input[i]) == self.M # Check correct input format
             vector = fock_vector(self.N, self.M, config_input[i], S=self.S)
             # Only add restricted ang. mom. bases to the Fock spaces
-            if(vector.ang_mom() == self.L):
-                self.basis.append(fock_vector(self.N, self.M, config_input[i],index=index, S=self.S)) # Create fock vectors
+            #if(vector.ang_mom() == self.L):
+            self.basis.append(fock_vector(self.N, self.M, config_input[i],index=index, S=self.S)) # Create fock vectors
                 #self.basis[-1].print_info()
-                index += 1
+            index += 1
         self.fock_size = index
         self.many_body_H = np.zeros((self.fock_size, self.fock_size))
         
@@ -106,6 +106,9 @@ class sphere_Hamiltonian(Hamiltonian):
                         #basis2.print_info()
                         
                         # Calculate scalar integral overlaps
+                        # the indices run from 0 to M == 2*S + 1
+                        # for obtaining the correct angular momentum (i, j, k, l) must be between -S to S
+                        # Convention we take for Fock vector is to
                         matrix_overlap = self.matrix_overlap_sphere(i-self.S, j-self.S, k-self.S, l-self.S)
                         if (matrix_overlap != 0):
                             # Apply annihlation on basis 1 BRA -> (i, j) must be reversed
