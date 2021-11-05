@@ -20,9 +20,9 @@ import Sphere_Hamiltonian as sphere
 import config as configs
 from numpy import linalg as la
 
-N0 = 12
-S = 1
-N_range = np.array([N0])
+N0 = 2
+S = 4
+N_range = np.array([N0-1, N0, N0+1])
 e_grounds = []      #
 eprime_grounds = [] # For sign problems
 gap_grounds = []
@@ -30,10 +30,11 @@ gap_grounds = []
 eplus = 0
 eminus = 0
 e = 0
+
+#print(H.fock_size)
 for N in N_range:
     print('SIMULATION PARAMS')
     print(N)
-    S = int(N0)
     H = sphere.sphere_Hamiltonian(N=N, M=2*S+1, S=S)
     H.generate_basis()
     #H.show_basis()

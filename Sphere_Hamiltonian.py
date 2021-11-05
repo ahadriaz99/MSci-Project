@@ -75,10 +75,10 @@ class sphere_Hamiltonian(Hamiltonian):
             assert len(config_input[i]) == self.M # Check correct input format
             vector = fock_vector(self.N, self.M, config_input[i], S=self.S)
             # Only add restricted ang. mom. bases to the Fock spaces
-            #if(vector.ang_mom() == self.L):
-            self.basis.append(fock_vector(self.N, self.M, config_input[i],index=index, S=self.S)) # Create fock vectors
+            if(vector.ang_mom() == self.L):
+                self.basis.append(fock_vector(self.N, self.M, config_input[i],index=index, S=self.S)) # Create fock vectors
                 #self.basis[-1].print_info()
-            index += 1
+                index += 1
         self.fock_size = index
         self.many_body_H = np.zeros((self.fock_size, self.fock_size))
         
