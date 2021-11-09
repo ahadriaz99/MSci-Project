@@ -40,12 +40,12 @@ class disc_Hamiltonian(Hamiltonian):
         and index them
         '''
         config_input = np.array(configs.configurations(self.N, self.M)) # Calculate repeated combinations
-        print('configurations', config_input)
+        #print('configurations', config_input)
         assert len(config_input) == self.fock_size # Check dimensionality
         
         index = 0
         for i in range(len(config_input)):
-            print(i)
+            #print(i)
             assert len(config_input[i]) == self.M # Check correct input format
             vector = fock_vector(self.N, self.M, config_input[i])
             # Only add restricted ang. mom. bases to the Fock spaces
@@ -107,27 +107,27 @@ class disc_Hamiltonian(Hamiltonian):
                             #print('Overlap: ', self.overlap(new_basis1, new_basis2))
         return element
 
-H = disc_Hamiltonian(N=4,M=5,L=3)
+#H = disc_Hamiltonian(N=2,M=2,L=3)
 
 #configs.configurations(N=10, M=10)
-H.generate_basis()
-H.show_basis()
-H.print_matrix(H.construct_Hamiltonian())
-evalues, evecs = H.diagonalise()
-print('Hamiltonian eigenvalues [V0]')
-print(evalues)
-print('Ground state energy [V0] ', H.e_ground)
-H.check_sign_problem()
+#H.generate_basis()
+#H.show_basis()
+#H.print_matrix(H.construct_Hamiltonian())
+#evalues, evecs = H.diagonalise()
+#print('Hamiltonian eigenvalues [V0]')
+##print(evalues)
+#print('Ground state energy [V0] ', H.e_ground)
+#H.check_sign_problem()
 
 
 #print(configs.configurations(N=3, M=10))
-H.generate_basis()
-H.show_basis()
-H.construct_Hamiltonian()
-H.print_matrix(H.many_body_H)
+#H.generate_basis()
+#H.show_basis()
+#H.construct_Hamiltonian()
+#H.print_matrix(H.many_body_H)
 #evalues, evecs = H.diagonalise()#
 #print('Hamiltonian eigenvalues [V0]')
 #print(evalues)
 #print('Ground state energy [V0] ', H.e_ground)
 #H.check_sign_problem()
->>>>>>> 5913d15 (Minor updates)
+#>>>>>>> 5913d15 (Minor updates)

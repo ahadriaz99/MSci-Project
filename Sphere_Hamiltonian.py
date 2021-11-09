@@ -59,7 +59,7 @@ class sphere_Hamiltonian(Hamiltonian):
         
         V0 = 1
         return Dirac_Delta(i+j, k+l)*V0*((math.factorial(2*S+1))**2 * math.factorial(2*S + i + j) *
-                                         math.factorial(2*S - i - j))/(S * math.factorial(4*S + 1) * np.sqrt(sum_SM))
+                                         math.factorial(2*S - i - j))/(S * math.factorial(4*S + 1) * np.sqrt(float(sum_SM)))
         
     def generate_basis(self):
         '''
