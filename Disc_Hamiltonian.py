@@ -51,7 +51,7 @@ class disc_Hamiltonian(Hamiltonian):
             # Only add restricted ang. mom. bases to the Fock spaces
             if(vector.ang_mom() == self.L):
                 self.basis.append(fock_vector(self.N, self.M, config_input[i],index=index)) # Create fock vectors
-                vector.print_info()
+                #vector.print_info()
                 index += 1
         self.fock_size = index
         self.many_body_H = np.zeros((self.fock_size, self.fock_size))
@@ -131,3 +131,4 @@ class disc_Hamiltonian(Hamiltonian):
 #print('Ground state energy [V0] ', H.e_ground)
 #H.check_sign_problem()
 #>>>>>>> 5913d15 (Minor updates)
+

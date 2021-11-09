@@ -183,6 +183,7 @@ class Hamiltonian:
         '''
         Construct many-body Hamiltonian explicitly -- OPTIMISATION NEEDED!
         '''
+        print(len(self.basis), (self.fock_size))
         assert len(self.basis) == self.fock_size # Check if basis generation has been invoked
         i = 0
         for basis1 in self.basis:

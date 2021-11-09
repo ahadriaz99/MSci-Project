@@ -17,6 +17,7 @@ import copy
 from Fock_vector import fock_vector
 import Ryser_Algorithm as ryser
 import Sphere_Hamiltonian as sphere
+import Disc_Hamiltonian as disc
 import config as configs
 from numpy import linalg as la
 
@@ -32,30 +33,41 @@ params = {
    }
 plt.rcParams.update(params)
 
-N = 3
-S = 2
-L_range = np.linspace(0, N*S, N*S+1)
+N = 6
+M = 3
+filling = N**2/(2*M)
+L_max = 10
+L_range = np.linspace(0, L_max, L_max+1)
 e_grounds = []
 eprime_grounds = []
+evalues_all = []
 
 for L in L_range:
     print('SIMULATION PARAMS')
-    print('N=',N, 'S=', S, 'L=',L)
-    H = sphere.sphere_Hamiltonian(N=N, M=2*S+1, S=S, L=L)
+    print('N=',N, 'M=', M, 'L=',L)
+    H = disc.disc_Hamiltonian(N=N, M=M, L=L)
     H.generate_basis()
     #H.show_basis()
     H.construct_Hamiltonian()
     #H.print_matrix(H.many_body_H)
     evalues, evecs = H.diagonalise()
     e_grounds.append(evalues.min())
+    evalues_all.append(evalues)
     eprime_grounds.append(H.check_sign_problem())
     
-plt.title('N = %d, S = %d, L = %d'%(N, S, N*S))
+plt.title('Disc Hamiltonian N = %d, M = %d, L = %d'%(N, M, N*(M-1)))
 plt.plot(L_range, e_grounds, 'x', label='Hamiltonian')
 plt.plot(L_range, eprime_grounds, '.', label='SP Hamiltonian')
 plt.xlabel('Total angular momentum L')
 plt.ylabel('Ground state energy')
 plt.grid()
 plt.legend()
-plt.savefig('Excitations_N%dS%d.jpeg'%(N, S))
+plt.savefig('Disc_Excitations_N%dM%d.jpeg'%(N, M))
 
+print('Filling')
+print(filling)
+print('Eigenvalues')
+for L_index in range(len(L_range)):
+    print('L= ', L_range[L_index])
+    print('Evalues')
+    print(evalues_all[L_index])
