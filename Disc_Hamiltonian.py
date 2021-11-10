@@ -106,12 +106,31 @@ class disc_Hamiltonian(Hamiltonian):
                             element += 0.5*matrix_overlap*self.overlap(new_basis1, new_basis2)*total_prefactor_1*total_prefactor_2
                             #print('Overlap: ', self.overlap(new_basis1, new_basis2))
         return element
+        
+    def BoseDump(self):
+        '''
+        Output matrix elements in the Bose dump format
+        '''
+        with open('Disc_Overlaps_N%dM%dL%d.txt'%(self.N, self.M, self.L), 'a') as f:
+            f.write('&FCI NMODE= %d, NBOSON= %d\n&END\n'%(self.M, self.N))
+            for i in range(self.M):
+                for j in range(self.M):
+                    for k in range(self.M):
+                        for l in range(self.M):
+                            matrix_overlap = self.matrix_overlap_disc(i, j, k, l)
+                            if (matrix_overlap > self.tolerance):
+                                f.write(('%5.10f %d %d %d %d \n'%(matrix_overlap, (i+1), (j+1), (k+1), (l+1))))
+        f.close()
+                                
+                
+            
 
-#H = disc_Hamiltonian(N=2,M=2,L=3)
+H = disc_Hamiltonian(N=3,M=4,L=3)
 
 #configs.configurations(N=10, M=10)
-#H.generate_basis()
-#H.show_basis()
+H.generate_basis()
+H.show_basis()
+H.BoseDump()
 #H.print_matrix(H.construct_Hamiltonian())
 #evalues, evecs = H.diagonalise()
 #print('Hamiltonian eigenvalues [V0]')
