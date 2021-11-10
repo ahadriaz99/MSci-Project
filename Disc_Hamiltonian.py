@@ -125,7 +125,7 @@ class disc_Hamiltonian(Hamiltonian):
                 
             
 
-H = disc_Hamiltonian(N=3,M=4,L=3)
+H = disc_Hamiltonian(N=3,M=3,L=3)
 
 #configs.configurations(N=10, M=10)
 H.generate_basis()

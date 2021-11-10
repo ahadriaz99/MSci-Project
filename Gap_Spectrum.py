@@ -21,9 +21,9 @@ import Disc_Hamiltonian as disc
 import config as configs
 from numpy import linalg as la
 
-N0 = 10
+N0 = 4
 S = 4
-M = 5
+M = N0*(N0-1)
 mu = N0/(2*S)
 #N_range = np.array([N0-1,N0, N0+1])
 e_grounds = []      
@@ -47,7 +47,7 @@ for N in range(N0+1):
         gap.append(0)
     else:
         for i in N_range:
-            H = disc.disc_Hamiltonian(N = i, M = M, L = 6)
+            H = disc.disc_Hamiltonian(N = i, M = M, L = M - 1)
             H.generate_basis()
             H.construct_Hamiltonian()
             evalues,evecs = H.diagonalise()

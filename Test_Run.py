@@ -21,7 +21,7 @@ import Disc_Hamiltonian as disc
 import config as configs
 from numpy import linalg as la
 
-N0 = 3
+N0 = 4
 S = 4
 M = N0*(N0-1)
 mu = N0/(2*S)
@@ -50,23 +50,27 @@ print(e_grounds)
 print(eprime_grounds)
 #print(e_values)
 
+plt.rcParams.update({'figure.figsize': [12, 12], 'xtick.labelsize' : 20,
+'ytick.labelsize' : 20, 'font.size': 20, 'lines.markersize': 20} )
+
 #Plotting the energy spectrum 
-plt.figure(1)
+plt.figure()
 plt.grid()
+plt.title('Disc Geometry - Contact Interaction with N = {0} and M = {1}'.format(N0,M))
 plt.xlabel('Angular Momentum L')
 plt.ylabel('Energy Spectrum')
 for i,j in enumerate(e_values):
     #print(j)
     #print([L_range[i]]*len(j))
-    plt.plot([L_range[i]]*len(j), j, 'o')
+    plt.plot([L_range[i]]*len(j), j, '_', markersize = 20, mew =3)
 plt.show()   
 
 #Ground state energy spectrum 
-plt.figure(2)
+plt.figure()
 plt.grid()
 plt.title('N = {0}, M = {1}'.format(N0, M))
-plt.plot(L_range,e_grounds,'x', label = 'Hamiltonian', markersize = 10)
-plt.plot(L_range, eprime_grounds, 'o', label = 'SP Hamiltonian', markersize = 6)
+plt.plot(L_range,e_grounds,'x', label = 'Hamiltonian', markersize = 12)
+plt.plot(L_range, eprime_grounds, 'o', label = 'SP Hamiltonian', markersize = 8)
 plt.xlabel('Angular Momentum L')
 plt.ylabel('Ground State Energy')
 plt.legend()
