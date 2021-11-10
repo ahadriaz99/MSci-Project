@@ -32,7 +32,7 @@ class disc_Hamiltonian(Hamiltonian):
     def __init__(self,N, M, L):
         super().__init__(N,M)
         self.tolerance = 1e-10
-        self. L = L # Restrict total angular momentum for each Fock vectors
+        self. L = L # Restrict total angular momentum for each Fock vector
     
     def generate_basis(self):
         '''
@@ -118,7 +118,7 @@ class disc_Hamiltonian(Hamiltonian):
                     for k in range(self.M):
                         for l in range(self.M):
                             matrix_overlap = self.matrix_overlap_disc(i, j, k, l)
-                            if (matrix_overlap > self.tolerance):
+                            if (abs(matrix_overlap) > self.tolerance):
                                 f.write(('%5.10f %d %d %d %d \n'%(matrix_overlap, (i+1), (j+1), (k+1), (l+1))))
         f.close()
                                 

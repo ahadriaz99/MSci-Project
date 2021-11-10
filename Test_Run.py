@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """"
-Testing script for identifying incompressible liquid phases at half-fillings
-
+Testing script for identifying incompressible liquid phases at half-filling
 
 25/10/21
 
@@ -21,10 +20,9 @@ import Disc_Hamiltonian as disc
 import config as configs
 from numpy import linalg as la
 
-N0 = 4
-S = 4
+N0 = 3
 M = N0*(N0-1)
-mu = N0/(2*S)
+mu = N0**2/(2*M)
 N_range = np.array([N0-1,N0, N0+1])
 e_grounds = []      
 e_values = []
@@ -75,5 +73,6 @@ plt.xlabel('Angular Momentum L')
 plt.ylabel('Ground State Energy')
 plt.legend()
 plt.show()
+
 
         
