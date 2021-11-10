@@ -21,9 +21,9 @@ import Disc_Hamiltonian as disc
 import config as configs
 from numpy import linalg as la
 
-N0 = 5
+N0 = 3
 S = 4
-M = 6
+M = N0*(N0-1)
 mu = N0/(2*S)
 N_range = np.array([N0-1,N0, N0+1])
 e_grounds = []      
@@ -48,7 +48,7 @@ for L in L_range:
 print('N0 = ', N0)
 print(e_grounds)
 print(eprime_grounds)
-print(e_values)
+#print(e_values)
 
 #Plotting the energy spectrum 
 plt.figure(1)
@@ -71,6 +71,5 @@ plt.xlabel('Angular Momentum L')
 plt.ylabel('Ground State Energy')
 plt.legend()
 plt.show()
-
 
         
