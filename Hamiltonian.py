@@ -183,13 +183,18 @@ class Hamiltonian:
         '''
         Construct many-body Hamiltonian explicitly -- OPTIMISATION NEEDED!
         '''
-        print(len(self.basis), (self.fock_size))
+        
+        #print(len(self.basis), (self.fock_size))
         assert len(self.basis) == self.fock_size # Check if basis generation has been invoked
         i = 0
-        for basis1 in self.basis:
-            for basis2 in self.basis:
-                self.many_body_H[basis1.index, basis2.index] = self.H_element(basis1, basis2)
-                i += 1
+        for basis1_index in range(len(self.basis)):
+            # Exploit hermitianity
+            for basis2_index in range(basis1_index, len(self.basis)):
+                element = self.H_element(self.basis[basis1_index], self.basis[basis2_index])
+                self.many_body_H[basis1_index, basis2_index] = element
+                self.many_body_H[basis2_index, basis1_index] = element
+                    
+                i += 2
                 if (i % 100 == 0):
                     print('Hamiltonian construction progress [%]', (i/(self.fock_size**2))*100)
         

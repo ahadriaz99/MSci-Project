@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """"
-Testing script for identifying incompressible liquid phases at half-fillings
-
+Testing script for identifying incompressible liquid phases at half-filling
 
 25/10/21
 
@@ -21,6 +20,42 @@ import Disc_Hamiltonian as disc
 import config as configs
 from numpy import linalg as la
 
+N0 = 5
+M = N0*(N0-1)
+mu = N0**2/(2*M)
+N_range = np.array([N0-1,N0, N0+1])
+e_grounds = []
+e_values = []
+eprime_grounds = [] # For sign problems
+L_range = np.linspace(0,M,M+1)
+
+for L in L_range:
+    print('SIMULATION PARAMS')
+    print(L)
+    H = disc.disc_Hamiltonian(N=N0,M = M, L = L)
+    #H = sphere.sphere_Hamiltonian(N=N0, M=2*S+1, S=S, L = L)
+    H.generate_basis()
+    #H.show_basis()
+    H.construct_Hamiltonian()
+    #H.print_matrix(H.many_body_H)
+    evalues, evecs = H.diagonalise()
+    e_values.append(evalues)
+    e_grounds.append(H.e_ground)
+    eprime_grounds.append(H.check_sign_problem())
+
+#print('N0 = ', N0)
+#print(e_grounds)
+#print(eprime_grounds)
+print(e_values)
+
+with open('Disc_Full_Spectrum_N%d_M%d.txt'%(N0, M), 'a') as f:
+    f.write('N %d M %d \n'%(N0, M))
+    for L in L_range:
+        f.write('L %d \n'%(L))
+        for i in range(len(e_values[int(L)])):
+            f.write(str(e_values[int(L)][i])+" ")
+        f.write('\n')
+
 params = {
    'axes.labelsize': 35,
    'font.size': 35,
@@ -33,41 +68,26 @@ params = {
    }
 plt.rcParams.update(params)
 
-N = 6
-M = 3
-filling = N**2/(2*M)
-L_max = 10
-L_range = np.linspace(0, L_max, L_max+1)
-e_grounds = []
-eprime_grounds = []
-evalues_all = []
-
-for L in L_range:
-    print('SIMULATION PARAMS')
-    print('N=',N, 'M=', M, 'L=',L)
-    H = disc.disc_Hamiltonian(N=N, M=M, L=L)
-    H.generate_basis()
-    #H.show_basis()
-    H.construct_Hamiltonian()
-    #H.print_matrix(H.many_body_H)
-    evalues, evecs = H.diagonalise()
-    e_grounds.append(evalues.min())
-    evalues_all.append(evalues)
-    eprime_grounds.append(H.check_sign_problem())
-    
-plt.title('Disc Hamiltonian N = %d, M = %d, L = %d'%(N, M, N*(M-1)))
-plt.plot(L_range, e_grounds, 'x', label='Hamiltonian')
-plt.plot(L_range, eprime_grounds, '.', label='SP Hamiltonian')
+#Plotting the energy spectrum
+plt.figure(1)
+plt.title('Disc Geometry (Contact repulsion) \n No. bosons N = {0} No. Landau levels M = {1}'.format(N0,M))
 plt.xlabel('Total angular momentum L')
-plt.ylabel('Ground state energy')
+plt.ylabel('Energy spectrum [$V_0$]')
+for i,j in enumerate(e_values):
+    #print(j)
+    #print([L_range[i]]*len(j))
+    plt.plot([L_range[i]]*len(j), j, '_', markersize = 25, mew =5)
 plt.grid()
-plt.legend()
-plt.savefig('Disc_Excitations_N%dM%d.jpeg'%(N, M))
+plt.savefig('Disc_Full_Spectrum_N%d_M%d.jpeg'%(N0, M))
 
-print('Filling')
-print(filling)
-print('Eigenvalues')
-for L_index in range(len(L_range)):
-    print('L= ', L_range[L_index])
-    print('Evalues')
-    print(evalues_all[L_index])
+#Ground state energy spectrum
+plt.figure(2)
+plt.title('Disc Geometry (Contact repulsion) \n No. bosons N = {0} No. Landau levels M = {1}'.format(N0,M))
+plt.plot(L_range,e_grounds,'x', label = 'Hamiltonian', markersize = 15, color='red', mew=3)
+plt.plot(L_range, eprime_grounds, 'o', label = 'SP Hamiltonian', markersize = 15, color='blue')
+plt.xlabel('Total angular momentum L')
+plt.ylabel('Ground state energy [$V_0$]')
+plt.legend()
+plt.grid()
+plt.savefig('Disc_Ground_State_N%d_M%d.jpeg'%(N0, M))
+
