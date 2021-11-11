@@ -176,11 +176,12 @@ class disc_Hamiltonian(Hamiltonian):
                 
             
 
-H = disc_Hamiltonian(N=3,M=3,L=3)
-H.generate_basis()
-H.show_basis()
-H.construct_Hamiltonian_fast()
-H.print_matrix(H.many_body_H)
+#H = disc_Hamiltonian(N=3,M=3,L=3)
+#H.generate_basis()
+#H.show_basis()
+#H.construct_Hamiltonian_fast()
+#H.print_matrix(H.many_body_H)
+
 #configs.configurations(N=10, M=10)
 #H.generate_basis()
 #H.show_basis()
