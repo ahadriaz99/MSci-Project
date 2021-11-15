@@ -43,36 +43,36 @@ for L in L_range:
     e_grounds.append(H.e_ground)
     eprime_grounds.append(H.check_sign_problem())    
 
-print('N0 = ', N0)
-print(e_grounds)
-print(eprime_grounds)
+#print('N0 = ', N0)
+#print(e_grounds)
+#print(eprime_grounds)
 #print(e_values)
 
 plt.rcParams.update({'figure.figsize': [12, 12], 'xtick.labelsize' : 20,
 'ytick.labelsize' : 20, 'font.size': 20, 'lines.markersize': 20} )
 
 #Plotting the energy spectrum 
-plt.figure()
 plt.grid()
-plt.title('Disc Geometry - Contact Interaction with N = {0} and M = {1}'.format(N0,M))
-plt.xlabel('Angular Momentum L')
-plt.ylabel('Energy Spectrum')
+plt.title('Disc Geometry (Contact repulsion) \n No. bosons N = {0} No. Landau levels M = {1}'.format(N0,M))
+plt.xlabel('Total angular Momentum L')
+plt.ylabel('Energy spectrum [V0]')
 for i,j in enumerate(e_values):
     #print(j)
     #print([L_range[i]]*len(j))
-    plt.plot([L_range[i]]*len(j), j, '_', markersize = 20, mew =3)
+    plt.plot([L_range[i]]*len(j), j, '_', markersize = 17, mew =3)
 plt.show()   
+plt.savefig('Disc_Full_Spectrum_N%d_M%d.jpeg'%(N0, M))
 
 #Ground state energy spectrum 
-plt.figure()
 plt.grid()
-plt.title('N = {0}, M = {1}'.format(N0, M))
+plt.title('No. bosons N = {0} No. Landau levels M = {1}'.format(N0,M))
 plt.plot(L_range,e_grounds,'x', label = 'Hamiltonian', markersize = 12)
 plt.plot(L_range, eprime_grounds, 'o', label = 'SP Hamiltonian', markersize = 8)
-plt.xlabel('Angular Momentum L')
-plt.ylabel('Ground State Energy')
+plt.xlabel('Total angular Momentum L')
+plt.ylabel('Ground state energy [V0]')
 plt.legend()
 plt.show()
+plt.savefig('Disc_Ground_State_N%d_M%d.jpeg'%(N0, M))
 
 
         

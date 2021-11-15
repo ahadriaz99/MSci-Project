@@ -16,18 +16,8 @@ from Fock_vector import fock_vector
 import Ryser_Algorithm as ryser
 import config as configs
 from numpy import linalg as la
-
-
-def Dirac_Delta(a, b):
-    '''
-    Simple delta function
-    '''
-    if (a == b):
-        return 1
-    else:
-        return 0
     
-class disc_Hamiltonian(Hamiltonian):
+class disc_Hamiltonian_fast(Hamiltonian):
     
     def __init__(self,N, M, L):
         super().__init__(N,M)
@@ -53,6 +43,7 @@ class disc_Hamiltonian(Hamiltonian):
                 self.basis.append(fock_vector(self.N, self.M, config_input[i],index=index)) # Create fock vectors
                 #vector.print_info()
                 index += 1
+        self.basis = np.array(self.basis)
         self.fock_size = index
         self.many_body_H = np.zeros((self.fock_size, self.fock_size))
 
@@ -76,47 +67,27 @@ class disc_Hamiltonian(Hamiltonian):
         # Wilkin exact eigenstates paper prescription
         # NOT WORKING -- Need to think harder
         assert len(self.basis) == self.fock_size # Check if basis generation has not been invoked
-    
-        for basis_index in range(len(self.basis)):
-            # Landau level
+        
+        # Diagonal entries
+        print(self.basis)
+        for basis in self.basis:
             diag_element = 0
-            for i in range(self.M):
-                if (i not in self.basis[basis_index].occup_basis):
-                    continue
-                diag_element += self.matrix_overlap_disc(i, i, i, i)*self.basis[basis_index].occups[i]*(self.basis[basis_index].occups[i]-1)
-                for j in range(i, self.M):
-                    if (j not in self.basis[basis_index].occup_basis):
-                        continue
-                    diag_element += 4*self.basis[basis_index].occups[i]*(self.basis[basis_index].occups[j])*self.matrix_overlap_disc(i, j, i, j)
-            self.many_body_H[basis_index, basis_index] = 0.5*diag_element
-        for basis1_index in range(len(self.basis)):
-                off_diag_element = 0
-                basis2 = copy.deepcopy(self.basis[basis1_index])
-                basis2_index = 0
-                for i1 in range(self.M):
-                    for i2 in range(self.M):
-                        for i3 in range(self.M):
-                            for i4 in range(self.M):
-                                if (i1 not in self.basis[basis1_index].occup_basis or i2 not in self.basis[basis1_index].occup_basis):
-                                    continue
-                                basis2 = basis2.annihilate(i1)[0]
-                                basi2 = basis2.annihilate(i2)[0]
-                                basis2 = basis2.creation(i3)[0]
-                                basis2 = basis2.creation(i4)[0]
-                                for index in range(len(self.basis)):
-                                    if self.basis[index].occups == basis2.occups:
-                                        basis2_index = index
-                                        break
-                                
-                                off_diag_element = 4*self.matrix_overlap_disc(i1, i2, i3, i4)
-                                off_diag_element *= np.sqrt(self.basis[basis1_index].occups[i1])
-                                off_diag_element *= np.sqrt(self.basis[basis1_index].occups[i2])
-                                off_diag_element *= np.sqrt(self.basis[basis2_index].occups[i3])
-                                off_diag_element *= np.sqrt(self.basis[basis2_index].occups[i4])
-                                
-                self.many_body_H[basis1_index, basis2_index] = off_diag_element
-                self.many_body_H[basis2_index, basis1_index] = off_diag_element
-            
+            occup_basis = np.sort(basis.occup_basis)
+            for index in range(len(occup_basis)):
+                i = occup_basis[index]
+                diag_element += 0.5*self.matrix_overlap_disc(i, i, i, i)\
+                                *basis.occups[i]*(basis.occups[i]-1)
+                for jndex in range(0, len(occup_basis)):
+                    j = occup_basis[jndex]
+                    diag_element += 2*self.matrix_overlap_disc(i, j, i, j)\
+                                    *basis.occups[i]*(basis.occups[j])
+            print(diag_element)
+            self.many_body_H[basis.index, basis.index] = diag_element
+        # Off diagonals with 4 distinct states
+        
+        
+        
+
     def H_element(self, basis1, basis2):
         '''
         Calculate matrix element between 2 many-body basis states
@@ -176,11 +147,11 @@ class disc_Hamiltonian(Hamiltonian):
                 
             
 
-H = disc_Hamiltonian(N=3,M=3,L=3)
+H = disc_Hamiltonian_fast(N=3,M=3,L=3)
 H.generate_basis()
 H.show_basis()
-H.construct_Hamiltonian()
-H.print_matrix(H.many_body_H)
+H.construct_Hamiltonian_fast()
+#H.print_matrix(H.many_body_H)
 
 #configs.configurations(N=10, M=10)
 #H.generate_basis()
