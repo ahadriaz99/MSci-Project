@@ -17,7 +17,7 @@ import copy
 from Fock_vector import fock_vector
 import Ryser_Algorithm as ryser
 import Sphere_Hamiltonian as sphere
-import Disc_Hamiltonian as disc 
+import Disc as disc
 import config as configs
 from numpy import linalg as la
 
@@ -43,10 +43,10 @@ e = 0
     if N == 0 or N == 1:
         continue
     else:'''
-H = disc.disc_Hamiltonian(N = 2, M = 2*(2-1), L = 2*(2-1))
+H = disc.disc_Hamiltonian_fast(N = 2, M = 2*(2-1), L = 2*(2-1))
 H.generate_basis()
-H.construct_Hamiltonian()
-H.print_matrix(H.many_body_H)
+H.construct_Hamiltonian_fast()
+#H.print_matrix(H.many_body_H)
 evalues,evecs = H.diagonalise()
 print(evalues, evecs)
 

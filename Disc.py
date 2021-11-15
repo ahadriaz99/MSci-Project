@@ -75,8 +75,8 @@ class disc_Hamiltonian_fast(Hamiltonian):
         diag_element = 0
         
         occup_basis = np.sort(basis.occup_basis)
-        print(basis.print_info())
-        print(occup_basis)
+        #print(basis.print_info())
+        #print(occup_basis)
         for index in range(len(occup_basis)):
             i = occup_basis[index]
             #print(i)
@@ -187,7 +187,7 @@ class disc_Hamiltonian_fast(Hamiltonian):
         assert len(self.basis) == self.fock_size # Check if basis generation has not been invoked
     
         # Diagonal entries
-        print(self.basis)
+        #print(self.basis)
         for basis in self.basis:
             self.many_body_H[basis.index, basis.index] = self.diag_entry(basis)
             self.construct_off_diag_entries(basis)
