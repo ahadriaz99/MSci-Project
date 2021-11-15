@@ -72,51 +72,7 @@ class disc_Hamiltonian(Hamiltonian):
             return V0*math.factorial(i+j)/2**(i+j)/\
                np.sqrt(float(math.factorial(i)*math.factorial(j)*math.factorial(k)*math.factorial(l)))
                
-    def construct_Hamiltonian_fast(self):
-        # Wilkin exact eigenstates paper prescription
-        # NOT WORKING -- Need to think harder
-        assert len(self.basis) == self.fock_size # Check if basis generation has not been invoked
-    
-        for basis_index in range(len(self.basis)):
-            # Landau level
-            diag_element = 0
-            for i in range(self.M):
-                if (i not in self.basis[basis_index].occup_basis):
-                    continue
-                diag_element += self.matrix_overlap_disc(i, i, i, i)*self.basis[basis_index].occups[i]*(self.basis[basis_index].occups[i]-1)
-                for j in range(i, self.M):
-                    if (j not in self.basis[basis_index].occup_basis):
-                        continue
-                    diag_element += 4*self.basis[basis_index].occups[i]*(self.basis[basis_index].occups[j])*self.matrix_overlap_disc(i, j, i, j)
-            self.many_body_H[basis_index, basis_index] = 0.5*diag_element
-        for basis1_index in range(len(self.basis)):
-                off_diag_element = 0
-                basis2 = copy.deepcopy(self.basis[basis1_index])
-                basis2_index = 0
-                for i1 in range(self.M):
-                    for i2 in range(self.M):
-                        for i3 in range(self.M):
-                            for i4 in range(self.M):
-                                if (i1 not in self.basis[basis1_index].occup_basis or i2 not in self.basis[basis1_index].occup_basis):
-                                    continue
-                                basis2 = basis2.annihilate(i1)[0]
-                                basi2 = basis2.annihilate(i2)[0]
-                                basis2 = basis2.creation(i3)[0]
-                                basis2 = basis2.creation(i4)[0]
-                                for index in range(len(self.basis)):
-                                    if self.basis[index].occups == basis2.occups:
-                                        basis2_index = index
-                                        break
-                                
-                                off_diag_element = 4*self.matrix_overlap_disc(i1, i2, i3, i4)
-                                off_diag_element *= np.sqrt(self.basis[basis1_index].occups[i1])
-                                off_diag_element *= np.sqrt(self.basis[basis1_index].occups[i2])
-                                off_diag_element *= np.sqrt(self.basis[basis2_index].occups[i3])
-                                off_diag_element *= np.sqrt(self.basis[basis2_index].occups[i4])
-                                
-                self.many_body_H[basis1_index, basis2_index] = off_diag_element
-                self.many_body_H[basis2_index, basis1_index] = off_diag_element
-            
+ 
     def H_element(self, basis1, basis2):
         '''
         Calculate matrix element between 2 many-body basis states
@@ -176,11 +132,11 @@ class disc_Hamiltonian(Hamiltonian):
                 
             
 
-H = disc_Hamiltonian(N=3,M=3,L=3)
-H.generate_basis()
-H.show_basis()
-H.construct_Hamiltonian()
-H.print_matrix(H.many_body_H)
+#H = disc_Hamiltonian(N=5,M=5,L=15)
+#H.generate_basis()
+#H.show_basis()
+#H.construct_Hamiltonian()
+#H.print_matrix(H.many_body_H)
 
 #configs.configurations(N=10, M=10)
 #H.generate_basis()
