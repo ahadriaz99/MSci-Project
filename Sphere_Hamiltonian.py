@@ -128,10 +128,11 @@ class sphere_Hamiltonian(Hamiltonian):
                             element += 0.5*matrix_overlap*self.overlap(new_basis1, new_basis2)*total_prefactor_1*total_prefactor_2
                             #print('Overlap: ', self.overlap(new_basis1, new_basis2))
         return element
-
-H = sphere_Hamiltonian(N=10, M=11, S=5, L=2)
+'''
+H = sphere_Hamiltonian(N=5, M=9, S=4, L=2)
 H.generate_basis()
 print('Fock size', H.fock_size)
 H.construct_Hamiltonian()
 H.show_basis()
 H.print_matrix(H.many_body_H)
+'''
