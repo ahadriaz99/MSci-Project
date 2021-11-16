@@ -27,7 +27,6 @@ def configurations(N, M):
 
 def disc_config(N,M,L):
     
-    config_input = np.array(configurations(N, M)) # Calculate repeated combinations
     #print('configurations', config_input)
     for i in range(0,L+1):
         if exists('Disc_Configurations_N%dM%dL%d.txt'%(N, M, i)):
@@ -38,6 +37,7 @@ def disc_config(N,M,L):
         with open('Disc_Configurations_N%dM%dL%d.txt'%(N, M, i), 'a') as f:
             f.write('N,   M,    L,    Basis \n')
     f.close()
+    config_input = np.array(configurations(N, M)) # Calculate repeated combinations
     
     for j in range(len(config_input)):
         assert len(config_input[j]) == M
@@ -54,7 +54,6 @@ def disc_config(N,M,L):
     f.close()
     
 #Test case
-#disc_config(4, 7, 12)
 #disc_config(4, 7, 12)
 #configurations(2,2)
 #configurations(3,2)

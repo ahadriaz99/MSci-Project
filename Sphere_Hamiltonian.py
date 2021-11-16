@@ -42,7 +42,7 @@ class sphere_Hamiltonian(Hamiltonian):
         self.tolerance = 1e-10
         self.L = L
         self.V0 = 1
-        self.v = np.zeros((self.M), self.M):
+        self.v = np.zeros((self.M, self.M))
         for index in range(self.M):
             for jndex in range(self.M):
                 i = index - self.S

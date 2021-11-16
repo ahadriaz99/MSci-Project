@@ -28,15 +28,18 @@ e_grounds = []
 e_values = []
 eprime_grounds = [] # For sign problems
 L_range = np.linspace(0,M,M+1)
+configs.disc_config(N0, M, M)
 
 for L in L_range:
     print('SIMULATION PARAMS')
     print('L ', L)
-    H = disc.disc_Hamiltonian_fast(N=N0, M = int(L+1), L = L)
+    H = disc.disc_Hamiltonian_fast(N=N0, M = M, L = L)
     #H = sphere.sphere_Hamiltonian(N=N0, M=2*S+1, S=S, L = L)
     H.generate_basis()
     #H.show_basis()
     print('Fock space ', H.fock_size)
+    if (H.fock_size > 5000):
+        print('Large fock space')
 
     H.construct_Hamiltonian_fast()
     #H.print_matrix(H.many_body_H)

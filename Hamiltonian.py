@@ -39,8 +39,7 @@ class Hamiltonian:
         self.S = S # Added for spherical Hamiltonian
         
         # Size of Hilbert space (no. repeated combinations available)
-        self.fock_size =  int(math.factorial(self.N+self.M-1)/\
-               (math.factorial(self.N)*math.factorial(self.M-1)))
+        self.fock_size =  None #int(math.factorial(self.N+self.M-1)/\(math.factorial(self.N)*math.factorial(self.M-1)))
         
         # Dictionary indexed by many-body basis state index for state A, B,
         # storing the overlap of the matrix
@@ -51,7 +50,7 @@ class Hamiltonian:
         self.basis = []
         
         # Many-body Hamiltonian -> OPTIMISATION
-        self.many_body_H = np.zeros((self.fock_size, self.fock_size))
+        self.many_body_H = None #np.zeros((self.fock_size, self.fock_size))
         
         # Ground state properties
         self.e_ground = None
@@ -225,6 +224,7 @@ class Hamiltonian:
         Carry out exact diagonalisation to produce ground state energy
         and configuration
         '''
+        print('Diagonalising Hamiltonian...')
         evalues, evectors = la.eigh(self.many_body_H)
         e_ground = evalues.min()
         
@@ -240,6 +240,8 @@ class Hamiltonian:
         the difference should be small
         '''
         assert self.e_ground is not None
+        print('Diagonalising stoquastic Hamiltonian...')
+
         H_prime = -abs(self.many_body_H)
         H_prime[np.diag_indices(self.fock_size)] = np.diag(self.many_body_H)
         #self.print_matrix(H_prime)

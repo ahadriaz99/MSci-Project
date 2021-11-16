@@ -29,9 +29,26 @@ class disc_Hamiltonian_fast(Hamiltonian):
         self.v = np.zeros((self.M, self.M))
         for i in range(self.M):
             for j in range(i, self.M):
+                #print(i, j)
+                ifac = math.factorial(i)
+                jfac = math.factorial(j)
                 self.v[i, j] = np.sqrt(float(math.factorial(i+j)))/\
-                               np.sqrt(float(math.factorial(i)*math.factorial(j)))
+                               np.sqrt(float(ifac*jfac))
                 self.v[j, i] = self.v[i, j]
+                
+    def large_fac(self, I, J):
+        max = np.max([I, J])
+        min = np.min([I, J])
+        result = 1
+        divisor = max
+        for j in range(abs(I-J), I+J+1):
+            result /= divisor
+            if (divisor >= 1):
+                divisor -= 1
+            result *= j
+        if (divisor >= 1):
+            result /= math.factorial(divisor)
+        return float(result)
         
     def generate_basis(self):
         '''
@@ -40,7 +57,7 @@ class disc_Hamiltonian_fast(Hamiltonian):
         '''
         # If basis generation has not been invoked, generate basis
         print('Basis generation...')
-        configs.disc_config(self.N, self.M, self.L)
+        configs.disc_config(int(self.N), int(self.M), int(self.L))
         index = 0
         file='Disc_Configurations_N%dM%dL%d.txt'%(self.N, self.M, self.L)
         print('Reading in configurations...')
@@ -67,6 +84,9 @@ class disc_Hamiltonian_fast(Hamiltonian):
                 index += 1
                 if (index % 100 == 0):
                     print('Index ', index)
+            
+        print('Basis generation complete')
+        print('Fock space size: ', self.fock_size)
                 
         self.basis = np.array(self.basis)
         self.fock_size = index
