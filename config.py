@@ -27,33 +27,22 @@ def config_ang(N,M,L):
     #print('configurations', config_input)
         
     index = 0
-    basis = []
-    for i in range(len(config_input)):
-        #print(i)
-        assert len(config_input[i]) == M # Check correct input format
-        vector = fock_vector(N, M, config_input[i])
-        # Only add restricted ang. mom. bases to the Fock spaces
-        if(vector.ang_mom() == L):
-            basis.append(fock_vector(N, M, config_input[i],index=index)) # Create fock vectors
-            index += 1
-    
-    #for basis in basis:
-    #    return(basis.print_info())
+    basis = []    
     
     for i in range(0,L+1):
         with open('Configurations_N%dM%dL%d.txt'%(N, M, i), 'a') as f:
             f.write('N,   M,    L,    Basis \n')
-            for j in range(len(config_input)):
-                assert len(config_input[i]) == M
-                vector = fock_vector(N, M, config_input[i])
-                if(vector.ang_mom() == L):
-                    basis.append(fock_vector(N, M, config_input[i],index=index)) 
-                    index += 1
-                    value = np.zeros(M)
-                    for k in j.occup_basis:
-                        value[k] = basis.occups[k]
-                    f.write(('%d   %d    %d    %s \n'%(N,M,i,value)))
-    f.close()
+        f.close()
+    
+    for j in range(len(config_input)):
+        assert len(config_input[i]) == M
+        vector = fock_vector(N, M, config_input[i])
+        ang_mom = vector.ang_mom()
+        value = np.zeros(M)
+        for k in vector.occup_basis:
+            value[k] = vector.occups[k]
+        with open('Configurations_N%dM%dL%d.txt'%(N, M, ang_mom), 'a') as f:
+             f.write('%d,     %d,    %d, %s \n'%(N,M,ang_mom,value))
         
 #Test case
 config_ang(2,3,3)
