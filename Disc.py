@@ -38,24 +38,39 @@ class disc_Hamiltonian_fast(Hamiltonian):
         Generate many-body basis states from repeated combinations
         and index them
         '''
-        config_input = np.array(configs.configurations(self.N, self.M)) # Calculate repeated combinations
-        #print('configurations', config_input)
-        assert len(config_input) == self.fock_size # Check dimensionality
-        
+        # If basis generation has not been invoked, generate basis
+        print('Basis generation...')
+        configs.disc_config(self.N, self.M, self.L)
         index = 0
-        for i in range(len(config_input)):
-                
-            assert len(config_input[i]) == self.M # Check correct input format
-            vector = fock_vector(self.N, self.M, config_input[i])
-            # Only add restricted ang. mom. bases to the Fock spaces
-            if(vector.ang_mom() == self.L):
-                self.basis.append(fock_vector(self.N, self.M, config_input[i],index=index)) # Create fock vectors
-                #vector.print_info()
+        file='Disc_Configurations_N%dM%dL%d.txt'%(self.N, self.M, self.L)
+        print('Reading in configurations...')
+        with open(file, 'r') as f:
+            for line in f:
+                split_line = line.split()
+                if (split_line[0]=='N,'):
+                    continue
+                N = split_line[0]
+                M = split_line[1]
+                L = split_line[2]
+                basis = []
+                config = split_line[3:]
+                for item in config:
+                    basis.append(int(item))
+                #print(N, M, L, len(config), len(basis))
+                #print(config, basis)
+                #print(self.N, N, self.M, M)
+                assert int(N) == self.N and int(M) == self.M
+                vector = fock_vector(int(N), int(M), np.array(basis))
+                assert vector.ang_mom() == self.L
+                vector = fock_vector(int(N), int(M), np.array(basis), S=0, index=index)
+                self.basis.append(vector)
                 index += 1
+                if (index % 100 == 0):
+                    print('Index ', index)
+                
         self.basis = np.array(self.basis)
         self.fock_size = index
         self.many_body_H = np.zeros((self.fock_size, self.fock_size))
-
         #print(config_input[i], i)
           
     def matrix_overlap_disc(self, i, j, k, l):
@@ -139,6 +154,8 @@ class disc_Hamiltonian_fast(Hamiltonian):
                                     break
                         if (new_basis_index is None):
                             print('New basis not in Hamiltonian space')
+                            print(new_fock.print_info)
+                            self.show_basis()
                             assert 0
                         
                         # Assign matrix element
@@ -174,6 +191,8 @@ class disc_Hamiltonian_fast(Hamiltonian):
                                     break
                         if (new_basis_index is None):
                             print('New basis not in Hamiltonian space')
+                            print(new_fock.print_info)
+                            self.show_basis()
                             assert 0
                         
                         # Assign matrix element
@@ -195,7 +214,8 @@ class disc_Hamiltonian_fast(Hamiltonian):
         for basis in self.basis:
             self.many_body_H[basis.index, basis.index] = self.diag_entry(basis)
             self.construct_off_diag_entries(basis)
-            print('Hamiltonian construction progress [%] ', (counter/self.fock_size)*100)
+            if (counter % 10 == 0):
+                print('Fast Hamiltonian construction progress [%] ', (counter/self.fock_size)*100)
             counter += 1
 
     def H_element(self, basis1, basis2):
@@ -254,14 +274,13 @@ class disc_Hamiltonian_fast(Hamiltonian):
                                 f.write(('%5.10f %d %d %d %d \n'%(matrix_overlap, (i+1), (j+1), (k+1), (l+1))))
         f.close()
                                 
-                
-# N = 5
-#M = 20
-#L = 20
+#N = 5
+#M = 5
+#L = 5
 #H = disc_Hamiltonian_fast(N=N,M=M,L=L)
 #H.generate_basis()
 #H.construct_Hamiltonian_fast()
-
+#H.print_matrix(H.many_body_H)
 #H1 = disc_Hamiltonian(N=N,M=M,L=L)
 #H1.generate_basis()
 #H.show_basis()

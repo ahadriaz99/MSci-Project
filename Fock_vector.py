@@ -57,6 +57,7 @@ class fock_vector:
         assert np.all(np.array(occupations)) >= 0
         #assert type(np.all(np.array(occupations))) == 'int'
         # Correct space of basis states
+        #print(len(np.array(occupations)), M)
         assert len(np.array(occupations)) == M
         
         if (np.array(occupations).sum() == 0):
