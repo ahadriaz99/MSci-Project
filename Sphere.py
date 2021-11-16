@@ -49,27 +49,20 @@ class sphere_Hamiltonian(Hamiltonian):
                 j = jndex - self.S
                 self.v[index, jndex] = np.sqrt(float(math.factorial(self.S+(i+j))*math.factorial(self.S-(i+j))))/\
                                np.sqrt(float(math.factorial(self.S + i)*math.factorial(self.S - i)*\
-                                             math.factorial(self.S - j)*math.factorial(self.S - j)))
+                                             math.factorial(self.S - j)*math.factorial(self.S - j)))*\
+                               np.sqrt(self.S*math.factorial(4*self.S + 1))*float(math.factorial(2*self.S+1))
+                                        
         
           
     def matrix_overlap_sphere(self, i, j, k, l):
         '''
         Construct many-body matrix elements for disc Hamiltonian
+        i, j, k, l refer to values between [-S, S]
         '''
         if (i+j != k+l):
             return 0
-        S = self.S
-        sum_SM = 1
-        
-        sum_SM *= math.factorial(S + i) * math.factorial(S - i)
-        sum_SM *= math.factorial(S + j) * math.factorial(S - j)
-        sum_SM *= math.factorial(S + k) * math.factorial(S - k)
-        sum_SM *= math.factorial(S + l) * math.factorial(S - l)
-        
-        #print(sum_SM)
-        
-        return self.V0*((math.factorial(2*S+1))**2 * math.factorial(2*S + i + j) *
-                                         math.factorial(2*S - i - j))/(S * math.factorial(4*S + 1) * np.sqrt(float(sum_SM)))
+        else:
+            return self.V0*self.v[i + self.S, j + self.S]*self.v[k + self.S, l + self.S]
         
     def generate_basis(self):
         '''
