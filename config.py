@@ -21,30 +21,28 @@ def configurations(N, M):
     valid_configs = list(map(tuple,valid_configs))
     return valid_configs
 
-def config_ang(N,M,L):
+def disc_config(N,M,L):
     
     config_input = np.array(configurations(N, M)) # Calculate repeated combinations
     #print('configurations', config_input)
-        
-    index = 0
-    basis = []    
     
     for i in range(0,L+1):
         with open('Configurations_N%dM%dL%d.txt'%(N, M, i), 'a') as f:
             f.write('N,   M,    L,    Basis \n')
-        f.close()
+    f.close()
     
     for j in range(len(config_input)):
-        assert len(config_input[i]) == M
-        vector = fock_vector(N, M, config_input[i])
+        assert len(config_input[j]) == M
+        vector = fock_vector(N, M, config_input[j])
         ang_mom = vector.ang_mom()
-        value = np.zeros(M)
-        for k in vector.occup_basis:
-            value[k] = vector.occups[k]
-        with open('Configurations_N%dM%dL%d.txt'%(N, M, ang_mom), 'a') as f:
-             f.write('%d,     %d,    %d, %s \n'%(N,M,ang_mom,value))
-        
+        if ang_mom > L:
+            continue
+        else:
+            with open('Disc_Configurations_N%dM%dL%d.txt'%(N, M, ang_mom), 'a') as f:
+                f.write('%d,    %d,   %d, %s \n'%(N,M,ang_mom,config_input[j]))
+    f.close()
+
 #Test case
-config_ang(2,3,3)
+disc_config(5,5,5)
 #configurations(2,2)
 #configurations(3,2)
