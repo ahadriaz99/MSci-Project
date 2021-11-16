@@ -8,6 +8,7 @@ by Marcell Dorian Kovacs and Ahad Riaz
 """
 import numpy as np
 from itertools import combinations
+from Fock_vector import fock_vector
 
 def configurations(N, M):
     ''' the function is used to implement a algorithm to find all the possible 
@@ -35,14 +36,26 @@ def config_ang(N,M,L):
         if(vector.ang_mom() == L):
             basis.append(fock_vector(N, M, config_input[i],index=index)) # Create fock vectors
             index += 1
-          
     
-    for basis in basis:
-        return(basis.print_info())
+    #for basis in basis:
+    #    return(basis.print_info())
     
-    
-    with open('Restricted_Bases_N%dM%d.txt'%(N, M), 'a') as f:
-            f.write('&N= %d, M= %d, L=%d, \n&END\n'%(self.M, self.N))
+    for i in range(0,L+1):
+        with open('Configurations_N%dM%dL%d.txt'%(N, M, i), 'a') as f:
+            f.write('N,   M,    L,    Basis \n')
+            for j in range(len(config_input)):
+                assert len(config_input[i]) == M
+                vector = fock_vector(N, M, config_input[i])
+                if(vector.ang_mom() == L):
+                    basis.append(fock_vector(N, M, config_input[i],index=index)) 
+                    index += 1
+                    value = np.zeros(M)
+                    for k in j.occup_basis:
+                        value[k] = basis.occups[k]
+                    f.write(('%d   %d    %d    %s \n'%(N,M,i,value)))
+    f.close()
+        
 #Test case
+config_ang(2,3,3)
 #configurations(2,2)
 #configurations(3,2)
