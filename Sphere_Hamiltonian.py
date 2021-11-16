@@ -41,24 +41,26 @@ class sphere_Hamiltonian(Hamiltonian):
 
         self.tolerance = 1e-10
         self.L = L
+        self.V0 = 1
+        
           
     def matrix_overlap_sphere(self, i, j, k, l):
         '''
         Construct many-body matrix elements for disc Hamiltonian
         '''
+        if (i+j != k+l):
+            return 0
         S = self.S
         sum_SM = 1
         
-        sum_SM *= math.factorial(S + i) * math.factorial(S-i)
-        sum_SM *= math.factorial(S + j) * math.factorial(S-j)
-        sum_SM *= math.factorial(S + k) * math.factorial(S-k)
-        sum_SM *= math.factorial(S + l) * math.factorial(S-l)
+        sum_SM *= math.factorial(S + i) * math.factorial(S - i)
+        sum_SM *= math.factorial(S + j) * math.factorial(S - j)
+        sum_SM *= math.factorial(S + k) * math.factorial(S - k)
+        sum_SM *= math.factorial(S + l) * math.factorial(S - l)
         
         #print(sum_SM)
         
-        
-        V0 = 1
-        return Dirac_Delta(i+j, k+l)*V0*((math.factorial(2*S+1))**2 * math.factorial(2*S + i + j) *
+        return self.V0*((math.factorial(2*S+1))**2 * math.factorial(2*S + i + j) *
                                          math.factorial(2*S - i - j))/(S * math.factorial(4*S + 1) * np.sqrt(float(sum_SM)))
         
     def generate_basis(self):
@@ -98,6 +100,8 @@ class sphere_Hamiltonian(Hamiltonian):
             for j in range(self.M):
                 for k in range(self.M):
                     for l in range(self.M):
+                        if (i+j != k+l):
+                            continue
                     
                         #print('Operator indices', i, j, k, l)
                         #print('BRA BASIS')
@@ -124,3 +128,10 @@ class sphere_Hamiltonian(Hamiltonian):
                             element += 0.5*matrix_overlap*self.overlap(new_basis1, new_basis2)*total_prefactor_1*total_prefactor_2
                             #print('Overlap: ', self.overlap(new_basis1, new_basis2))
         return element
+
+H = sphere_Hamiltonian(N=10, M=11, S=5, L=2)
+H.generate_basis()
+print('Fock size', H.fock_size)
+H.construct_Hamiltonian()
+H.show_basis()
+H.print_matrix(H.many_body_H)

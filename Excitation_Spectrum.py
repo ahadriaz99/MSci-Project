@@ -16,12 +16,12 @@ import copy
 from Fock_vector import fock_vector
 import Ryser_Algorithm as ryser
 import Sphere_Hamiltonian as sphere
-import Disc_Hamiltonian as disc
+import Disc as disc
 import config as configs
 from numpy import linalg as la
 
-N0 = 5
-M = N0*(N0-1)
+N0 = 10
+M = 10
 mu = N0**2/(2*M)
 N_range = np.array([N0-1,N0, N0+1])
 e_grounds = []
@@ -31,30 +31,30 @@ L_range = np.linspace(0,M,M+1)
 
 for L in L_range:
     print('SIMULATION PARAMS')
-    print(L)
-    H = disc.disc_Hamiltonian(N=N0,M = M, L = L)
+    print('L ', L)
+    H = disc.disc_Hamiltonian_fast(N=N0, M = int(L+1), L = L)
     #H = sphere.sphere_Hamiltonian(N=N0, M=2*S+1, S=S, L = L)
     H.generate_basis()
     #H.show_basis()
-    H.construct_Hamiltonian()
+    print('Fock space ', H.fock_size)
+
+    H.construct_Hamiltonian_fast()
     #H.print_matrix(H.many_body_H)
     evalues, evecs = H.diagonalise()
     e_values.append(evalues)
     e_grounds.append(H.e_ground)
     eprime_grounds.append(H.check_sign_problem())
-
-#print('N0 = ', N0)
-#print(e_grounds)
-#print(eprime_grounds)
-print(e_values)
-
-with open('Disc_Full_Spectrum_N%d_M%d.txt'%(N0, M), 'a') as f:
-    f.write('N %d M %d \n'%(N0, M))
-    for L in L_range:
+    with open('Disc_Full_Spectrum_N%d_M%d.txt'%(N0, M), 'a') as f:
+        if (L == 0):
+            f.write('N %d M %d \n'%(N0, M))
         f.write('L %d \n'%(L))
         for i in range(len(e_values[int(L)])):
             f.write(str(e_values[int(L)][i])+" ")
         f.write('\n')
+            
+#print('N0 = ', N0)
+#print(e_grounds)
+#print(eprime_grounds)
 
 params = {
    'axes.labelsize': 35,

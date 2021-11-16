@@ -21,9 +21,9 @@ import Disc_Hamiltonian as disc
 import config as configs
 from numpy import linalg as la
 
-
-
-N0=9
+N0=10
+filling = 5
+N0_range = [5, 6, 7, 8, 9, 10]
 #N_range = np.array([N0-1,N0, N0+1])
 e_grounds = []      
 e_values = []

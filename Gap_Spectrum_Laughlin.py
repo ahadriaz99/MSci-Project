@@ -23,7 +23,7 @@ from numpy import linalg as la
 
 
 
-N0 = 4
+N0 = 5
 M = N0*(N0-1)
 mu = N0**2/(2*M)
 
@@ -39,17 +39,6 @@ eplus = 0
 eminus = 0 
 e = 0
 
-'''for N in range(N0):
-    if N == 0 or N == 1:
-        continue
-    else:'''
-H = disc.disc_Hamiltonian_fast(N = 2, M = 2*(2-1), L = 2*(2-1))
-H.generate_basis()
-H.construct_Hamiltonian_fast()
-#H.print_matrix(H.many_body_H)
-evalues,evecs = H.diagonalise()
-print(evalues, evecs)
-
 for N in range(N0+1):
     print('SIM PARAMS')
     print('N ', N)
@@ -60,9 +49,9 @@ for N in range(N0+1):
         for i in N_range:
             print('Gap loop')
             print('N, M, L', i, N*(N-1), N*(N-1))
-            H = disc.disc_Hamiltonian(N = i, M = N*(N-1), L = N*(N-1))
+            H = disc.disc_Hamiltonian_fast(N = i, M = N*(N-1), L = N*(N-1))
             H.generate_basis()
-            H.construct_Hamiltonian()
+            H.construct_Hamiltonian_fast()
             evalues,evecs = H.diagonalise()
             if i == N + 1:
                 eplus = H.e_ground/i

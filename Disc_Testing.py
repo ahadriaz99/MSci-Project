@@ -30,8 +30,8 @@ def check_matrix(tolerance, M1, M2):
                    tolerance
             assert abs(M1[i, j] - M2[i, j]) <\
                    tolerance
-N = 4
-M = 12
+N = 8
+M = 10
 L_max = M
 
 for L in range(L_max+1):
@@ -57,6 +57,7 @@ for L in range(L_max+1):
 
     print('Time for fast routine [s]: ', fast_t1 - fast_t0)
     print('Time for regular routine [s]: ', reg_t1 - reg_t0)
+    print('Speedup ', ((reg_t1 - reg_t0)/(fast_t1 - fast_t0)))
 
     print('Running matrix comparison...')
     tolerance = 1e-10

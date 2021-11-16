@@ -180,6 +180,7 @@ class disc_Hamiltonian_fast(Hamiltonian):
                         self.many_body_H[basis.index, new_basis_index] = \
                         np.sqrt(basis.occups[i]*(basis.occups[i]-1)*new_occups[k]*new_occups[l])*self.matrix_overlap_disc(i, j, k, l)
                         self.many_body_H[new_basis_index, basis.index] = self.many_body_H[basis.index, new_basis_index]
+                        
                             
         
     def construct_Hamiltonian_fast(self):
@@ -188,10 +189,14 @@ class disc_Hamiltonian_fast(Hamiltonian):
     
         # Diagonal entries
         #print(self.basis)
+        print('Hamiltonian construction...')
+        print('Fock size: ', self.fock_size)
+        counter = 1
         for basis in self.basis:
             self.many_body_H[basis.index, basis.index] = self.diag_entry(basis)
             self.construct_off_diag_entries(basis)
-            
+            print('Hamiltonian construction progress [%] ', (counter/self.fock_size)*100)
+            counter += 1
 
     def H_element(self, basis1, basis2):
         '''
@@ -250,7 +255,7 @@ class disc_Hamiltonian_fast(Hamiltonian):
         f.close()
                                 
                 
-#N = 5
+# N = 5
 #M = 20
 #L = 20
 #H = disc_Hamiltonian_fast(N=N,M=M,L=L)
