@@ -27,8 +27,8 @@ def disc_config(N,M,L):
     #print('configurations', config_input)
     
     for i in range(0,L+1):
-        with open('Configurations_N%dM%dL%d.txt'%(N, M, i), 'a') as f:
-            f.write('N,   M,    L,    Basis \n')
+        with open('Disc_Configurations_N%dM%dL%d.txt'%(N, M, i), 'a') as f:
+            f.write('N   M    L    Basis \n')
     f.close()
     
     for j in range(len(config_input)):
@@ -39,7 +39,7 @@ def disc_config(N,M,L):
             continue
         else:
             with open('Disc_Configurations_N%dM%dL%d.txt'%(N, M, ang_mom), 'a') as f:
-                f.write('%d,    %d,   %d, %s \n'%(N,M,ang_mom,config_input[j]))
+                f.write('%d    %d   %d   %s \n'%(N,M,ang_mom,config_input[j]))
     f.close()
 
 #Test case
