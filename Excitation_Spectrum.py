@@ -20,8 +20,8 @@ import Disc as disc
 import config as configs
 from numpy import linalg as la
 
-N0 = 10
-M = 15
+N0 = 4
+M = 20
 mu = N0**2/(2*M)
 N_range = np.array([N0-1,N0, N0+1])
 e_grounds = []
