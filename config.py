@@ -7,6 +7,8 @@ Function to generated repeated combinatrics of bosonic configuration
 by Marcell Dorian Kovacs and Ahad Riaz
 """
 import numpy as np
+import gen as generator
+import math
 from itertools import combinations
 from Fock_vector import fock_vector
 from os.path import exists
@@ -53,6 +55,59 @@ def disc_config(N,M,L):
                 f.write('\n')
     f.close()
     
+def disc_config_fast(N, M, L):
+    n = N
+    m = M-1
+    counter = 0
+
+    #print('configurations', config_input)
+    for i in range(0,L+1):
+        if exists('Disc_Configurations_N%dM%dL%d.txt'%(N, M, i)):
+            #print('Configurations have already been generated for N %d M %d L %d '%(N, M, i))
+            if (i == L):
+                return
+            continue
+        with open('Disc_Configurations_N%dM%dL%d.txt'%(N, M, i), 'a') as f:
+            f.write('N,   M,    L,    Basis \n')
+    f.close()
+    
+    subspace_size = np.zeros(L+1)
+    for id in range(generator.get_sum(n,m)+1):
+        basis = np.array(generator.get_basis(n,id))
+        if len(basis) != M:
+            basis = np.array(np.concatenate((np.array(basis), np.zeros(abs(len(basis)-M)))))
+        basis = basis.astype(int)
+
+        vector = fock_vector(N, M, basis)
+        ang_mom = vector.ang_mom()
+        if ang_mom > L:
+            if (counter % 1000 == 0):
+                size = int(math.factorial(N+M-1)/math.factorial(M-1)/math.factorial(N))
+                print('Basis generation progress [%] ', (counter/size)*100)
+            counter += 1
+            continue
+        else:
+            with open('Disc_Configurations_N%dM%dL%d.txt'%(N, M, ang_mom), 'a') as f:
+                f.write('%d   %d   %d     '%(N,M,ang_mom))
+                for num in basis:
+                    f.write(str(num)+' ')
+                f.write('\n')
+            subspace_size[ang_mom] += 1
+        
+        if (counter % 1000 == 0):
+            size = int(math.factorial(N+M-1)/math.factorial(M-1)/math.factorial(N))
+            print('Basis generation progress [%] ', (counter/size)*100)
+        counter += 1
+    
+    with open('Stats_Disc_Configurations_N%dM%dL%d.txt'%(N, M, L), 'a') as f:
+                f.write('N = %d M =  %d L_max =  %d     \n'%(N,M,L))
+                for index in range(len(subspace_size)):
+                    f.write('L= '+str(index)+' subspace size: '+str(subspace_size[index])+' \n')
+                f.write('\n')
+                
+        
+    assert counter == int(math.factorial(N+M-1)/math.factorial(M-1)/math.factorial(N))
+disc_config_fast(5, 5, 5)
 #Test case
 #disc_config(4, 7, 12)
 #configurations(2,2)

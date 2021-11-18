@@ -57,7 +57,7 @@ class disc_Hamiltonian_fast(Hamiltonian):
         '''
         # If basis generation has not been invoked, generate basis
         print('Basis generation...')
-        configs.disc_config(int(self.N), int(self.M), int(self.L))
+        configs.disc_config_fast(int(self.N), int(self.M), int(self.L))
         index = 0
         file='Disc_Configurations_N%dM%dL%d.txt'%(self.N, self.M, self.L)
         print('Reading in configurations...')
@@ -114,10 +114,11 @@ class disc_Hamiltonian_fast(Hamiltonian):
         #print(occup_basis)
         for index in range(len(occup_basis)):
             i = occup_basis[index]
-            #print(i)
-            # Half factor comes from Hamiltonian definition
-            diag_element += 0.5*self.matrix_overlap_disc(i, i, i, i)\
-                            *basis.occups[i]*(basis.occups[i]-1)
+            if basis.occups[i] > 1:
+                #print(i)
+                # Half factor comes from Hamiltonian definition
+                diag_element += 0.5*self.matrix_overlap_disc(i, i, i, i)\
+                                *basis.occups[i]*(basis.occups[i]-1)
             # we only have to consider non-equal i, j pairs as symmetry
             # gives equal elements for ijij jiij, ijji, jiji basis indices
  
@@ -189,7 +190,7 @@ class disc_Hamiltonian_fast(Hamiltonian):
                         # Construct basis with non-zero entry for i = j
                         for q in basis.occup_basis:
                             new_occups[q] = basis.occups[q]
-                        
+                        # See Wilkin paper for angular momentum transfer rules
                         new_occups[i] = basis.occups[i] - 2
                         if (k in basis.occups):
                             new_occups[k] = basis.occups[k] + 1
