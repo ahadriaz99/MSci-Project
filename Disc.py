@@ -235,7 +235,7 @@ class disc_Hamiltonian_fast(Hamiltonian):
         for basis in self.basis:
             self.many_body_H[basis.index, basis.index] = self.diag_entry(basis)
             self.construct_off_diag_entries(basis)
-            if (counter % 10 == 0):
+            if (counter % 100 == 0):
                 print('Fast Hamiltonian construction progress [%] ', (counter/self.fock_size)*100)
             counter += 1
 

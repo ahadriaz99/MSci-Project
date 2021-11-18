@@ -94,7 +94,7 @@ def disc_config_fast(N, M, L):
                 f.write('\n')
             subspace_size[ang_mom] += 1
         
-        if (counter % 1000 == 0):
+        if (counter % 10000 == 0):
             size = int(math.factorial(N+M-1)/math.factorial(M-1)/math.factorial(N))
             print('Basis generation progress [%] ', (counter/size)*100)
         counter += 1

@@ -3,7 +3,9 @@
 
 import numpy as np
 import math
+from functools import lru_cache
 
+@lru_cache(maxsize=None)
 def get_sum(n, m):
     if (n == 0):
         return 1
@@ -16,7 +18,8 @@ def get_sum(n, m):
     for i in range(n):
         s += get_sum(n-i,m-1) + 1
     return s
-
+    
+@lru_cache(maxsize=None)
 def get_partial_sum(n, m, mx):
     s = 0
     if (n <= 0):
