@@ -22,3 +22,11 @@ Ahad? Marcell?
 
 4. (Optional) Analytic formula for the no. bases with fixed N, L, M
 5. Discussion with Robert regarding FCIQMC -- next week
+Ahad? Marcell?
+6. Plotting the density of states for the degeneracies of the disc exact spectra
+	a. Is the ground state degeneracy different for Laughlin/non-Laughlin?
+	b. Histograms showing the occurences of eigenvalues (be careful with tolerances with 0
+           energy ground state) in a particular L state spectrum
+	c. This script should read in the eigenvalues from the saved .txt spectra and only plot, 
+	   no need to rerun simulation
+ 
