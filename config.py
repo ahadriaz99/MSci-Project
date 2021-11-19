@@ -107,8 +107,8 @@ def disc_config_fast(N, M, L):
                 
         
     assert counter == int(math.factorial(N+M-1)/math.factorial(M-1)/math.factorial(N))
-disc_config_fast(5, 5, 5)
+#@disc_config_fast(5, 5, 5)
 #Test case
-#disc_config(4, 7, 12)
+#disc_config_fast(10, 30, 30)
 #configurations(2,2)
 #configurations(3,2)

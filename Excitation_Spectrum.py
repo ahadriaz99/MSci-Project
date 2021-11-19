@@ -20,13 +20,14 @@ import Disc as disc
 import config as configs
 from numpy import linalg as la
 
-N0 = 4
-M = 16
+N0 = 5
+M = 30
 mu = N0**2/(2*M)
 N_range = np.array([N0-1,N0, N0+1])
 e_grounds = []
 e_values = []
 eprime_grounds = [] # For sign problems
+gaps = []
 L_range = np.linspace(0,M,M+1)
 
 print('Basis generation...')
@@ -52,7 +53,7 @@ for L in L_range:
     e_values.append(evalues)
     e_grounds.append(H.e_ground)
     eprime_grounds.append(H.check_sign_problem())
-        
+    gaps.append(H.gap)
     
     with open('Disc_Full_Spectrum_N%d_M%d.txt'%(N0, M), 'a') as f:
         if (L == 0):
@@ -100,4 +101,12 @@ plt.ylabel('Ground state energy [$V_0$]')
 plt.legend()
 plt.grid()
 plt.savefig('Disc_Ground_State_N%d_M%d.jpeg'%(N0, M))
+plt.figure(3)
+plt.title('Disc Geometry (Contact repulsion) \n No. bosons N = {0} No. Landau levels M = {1}'.format(N0,M))
+plt.plot(L_range,gaps,'x', label = 'Hamiltonian', markersize = 15, color='red', mew=3)
+plt.ylabel('Local gap $|E_0 - E_1|$ [$V_0$]')
+plt.legend()
+plt.grid()
+plt.savefig('Disc_Local_Gap_N%d_M%d.jpeg'%(N0, M))
+
 

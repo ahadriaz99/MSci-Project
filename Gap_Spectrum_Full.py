@@ -17,29 +17,27 @@ import copy
 from Fock_vector import fock_vector
 import Ryser_Algorithm as ryser
 import Sphere_Hamiltonian as sphere
-import Disc_Hamiltonian as disc 
+import Disc as disc
 import config as configs
 from numpy import linalg as la
 
-N0=10
-filling = 5
-N0_range = [5, 6, 7, 8, 9, 10]
+
+
+N0 = 6
+M = N0*(N0-1)
+mu = N0**2/(2*M)
+
+
 #N_range = np.array([N0-1,N0, N0+1])
 e_grounds = []      
 e_values = []
 eprime_grounds = [] # For sign problems
-
+L_range = np.linspace(0,M,M+1)
 gap = []
 
 eplus = 0
 eminus = 0 
 e = 0
-
-'''for N in range(N0):
-    if N == 0 or N == 1:
-        continue
-    else:'''
-
 
 for N in range(N0+1):
     print('SIM PARAMS')
@@ -50,10 +48,10 @@ for N in range(N0+1):
     else:
         for i in N_range:
             print('Gap loop')
-            print('N, M, L', i, N*(N), N*(N))
-            H = disc.disc_Hamiltonian(N = i, M = N, L = N)
+            print('N, M, L', i, N*(N-1), N*(N-1))
+            H = disc.disc_Hamiltonian_fast(N = i, M = int(N*(N-1)/2), L = int(N*(N-1)/2))
             H.generate_basis()
-            H.construct_Hamiltonian()
+            H.construct_Hamiltonian_fast()
             evalues,evecs = H.diagonalise()
             if i == N + 1:
                 eplus = H.e_ground/i
@@ -69,6 +67,8 @@ with open('Disc_Gap_Spectrum_Full.txt', 'a') as f:
         f.write('N '+str(i))
         f.write('\n')
         f.write(str(gap[i])+'\n')
+        
+#Plotting the energy spectrum
 params = {
    'axes.labelsize': 35,
    'font.size': 35,
@@ -80,11 +80,19 @@ params = {
    'figure.figsize': [40, 20]
    }
 plt.rcParams.update(params)
-#Plotting the gap spectrum
+
 plt.figure(1)
-plt.title('Disc Geometry (Contact repulsion) \n No. Landau levels M = N Total ang. mom. L = N')
+plt.title('Disc Geometry (Contact repulsion) \n No. Landau levels M = N*(N-1)/2 Total ang. mom. L = N*(N-1)/2 \n Full filling')
 plt.ylabel('Energy gap [$V_0$]')
 plt.xlabel('$N_0$')
 plt.plot(range(N0+1), gap, 'x', color='red')
 plt.grid()
-plt.savefig('Disc_Gap_Spectrum_High_Filling_N%d.jpeg'%N0)
+plt.savefig('Disc_Gap_Spectrum_Full1.jpeg')
+
+plt.figure(2)
+plt.title('Disc Geometry (Contact repulsion) \n No. Landau levels M = N*(N-1)/2 Total ang. mom. L = N*(N-1)/2 \n Full filling')
+plt.ylabel('Energy gap [$V_0$]')
+plt.xlabel('1/$N_0$')
+plt.plot(1/np.array(range(N0+1))[1:], gap[1:], 'x', color='red')
+plt.grid()
+plt.savefig('Disc_Gap_Spectrum_Full2.jpeg')

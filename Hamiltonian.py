@@ -55,6 +55,7 @@ class Hamiltonian:
         # Ground state properties
         self.e_ground = None
         self.e_vector_ground = None
+        self.gap = None
         
     
     def overlap(self, fock_basis1, fock_basis2):
@@ -227,8 +228,13 @@ class Hamiltonian:
         print('Diagonalising Hamiltonian...')
         evalues, evectors = la.eigh(self.many_body_H)
         e_ground = evalues.min()
-        
+        print('Sorting eigevalues...')
+        evalues = np.sort(np.array(evalues))
+        if self.fock_size >= 2:
+            self.gap = abs(evalues[1] - evalues[0])
         self.e_ground, self.e_vector_ground = e_ground, evectors[np.where(evalues == e_ground)]
+        
+        
         
         return evalues, evectors
         

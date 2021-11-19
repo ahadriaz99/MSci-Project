@@ -186,6 +186,7 @@ class disc_Hamiltonian_fast(Hamiltonian):
                         
                     else:
                         if (basis.occups[i] < 2):
+        
                             continue
                         # Construct basis with non-zero entry for i = j
                         for q in basis.occup_basis:

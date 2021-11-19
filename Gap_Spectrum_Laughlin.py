@@ -23,7 +23,7 @@ from numpy import linalg as la
 
 
 
-N0 = 5
+N0 = 6
 M = N0*(N0-1)
 mu = N0**2/(2*M)
 
@@ -82,9 +82,17 @@ params = {
 plt.rcParams.update(params)
 
 plt.figure(1)
-plt.title('Disc Geometry (Contact repulsion) \n No. Landau levels M = N*(N-1) Total ang. mom. L = M')
+plt.title('Disc Geometry (Contact repulsion) \n No. Landau levels M = N*(N-1) Total ang. mom. L = N*(N-1) \n Half filling')
 plt.ylabel('Energy gap [$V_0$]')
 plt.xlabel('$N_0$')
 plt.plot(range(N0+1), gap, 'x', color='red')
 plt.grid()
-plt.savefig('Disc_Gap_Spectrum_Laughlin.jpeg')
+plt.savefig('Disc_Gap_Spectrum_Laughlin1.jpeg')
+
+plt.figure(2)
+plt.title('Disc Geometry (Contact repulsion) \n No. Landau levels M = N*(N-1) Total ang. mom. L = N*(N-1) \n Half filling')
+plt.ylabel('Energy gap [$V_0$]')
+plt.xlabel('1/$N_0$')
+plt.plot(1/np.array(range(N0+1))[1:], gap[1:], 'x', color='red')
+plt.grid()
+plt.savefig('Disc_Gap_Spectrum_Laughlin2.jpeg')
