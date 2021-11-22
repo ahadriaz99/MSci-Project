@@ -28,7 +28,7 @@ def Dirac_Delta(a, b):
     else:
         return 0
     
-class sphere_Hamiltonian(Hamiltonian):
+class sphere_Hamiltonian_fast(Hamiltonian):
     
     def __init__(self,N,M,S,L=-1):
         '''Additional argument for angular momentum S'''
@@ -42,15 +42,15 @@ class sphere_Hamiltonian(Hamiltonian):
         self.tolerance = 1e-10
         self.L = L
         self.V0 = 1
-        self.v = np.zeros((self.M), self.M):
-        for index in range(self.M):
-            for jndex in range(self.M):
-                i = index - self.S
-                j = jndex - self.S
-                self.v[index, jndex] = np.sqrt(float(math.factorial(self.S+(i+j))*math.factorial(self.S-(i+j))))/\
-                               np.sqrt(float(math.factorial(self.S + i)*math.factorial(self.S - i)*\
-                                             math.factorial(self.S - j)*math.factorial(self.S - j)))*\
-                               np.sqrt(self.S*math.factorial(4*self.S + 1))*float(math.factorial(2*self.S+1))
+        #self.v = np.zeros((self.M), self.M):
+        #for index in range(self.M):
+         #   for jndex in range(self.M):
+         ##       i = index - self.S
+          #      j = jndex - self.S
+          #      self.v[index, jndex] = np.sqrt(float(math.factorial(self.S+(i+j))*math.factorial(self.S-(i+j))))/\
+           #                    np.sqrt(float(math.factorial(self.S + i)*math.factorial(self.S - i)*\
+           #                                  math.factorial(self.S - j)*math.factorial(self.S - j)))*\
+           #                    np.sqrt(self.S*math.factorial(4*self.S + 1))*float(math.factorial(2*self.S+1))
                                         
         
           
@@ -62,29 +62,200 @@ class sphere_Hamiltonian(Hamiltonian):
         if (i+j != k+l):
             return 0
         else:
-            return self.V0*self.v[i + self.S, j + self.S]*self.v[k + self.S, l + self.S]
+            S = self.S
+            sum_SM = 1
+        
+            sum_SM *= math.factorial(S + i) * math.factorial(S - i)
+            sum_SM *= math.factorial(S + j) * math.factorial(S - j)
+            sum_SM *= math.factorial(S + k) * math.factorial(S - k)
+            sum_SM *= math.factorial(S + l) * math.factorial(S - l)
+        
+            #print(sum_SM)
+            
+            return self.V0*((math.factorial(2*S+1))**2 * math.factorial(2*S + i + j) *
+                                         math.factorial(2*S - i - j))/(S * math.factorial(4*S + 1) * np.sqrt(float(sum_SM)))
+            #return self.V0*self.v[i + self.S, j + self.S]*self.v[k + self.S, l + self.S]
         
     def generate_basis(self):
         '''
         Generate many-body basis states from repeated combinations
         and index them
         '''
-        config_input = np.array(configs.configurations(self.N, self.M)) # Calculate repeated combinations
-        assert len(config_input) == self.fock_size # Check dimensionality
-        
+        # If basis generation has not been invoked, generate basis
+        print('Basis generation...')
+        configs.sphere_config_fast(int(self.N), int(self.M), int(self.L), int(self.S))
         index = 0
-        for i in range(len(config_input)):
-            #print(i)
-            assert len(config_input[i]) == self.M # Check correct input format
-            vector = fock_vector(self.N, self.M, config_input[i], S=self.S)
-            # Only add restricted ang. mom. bases to the Fock spaces
-            if(vector.ang_mom() == self.L):
-                self.basis.append(fock_vector(self.N, self.M, config_input[i],index=index, S=self.S)) # Create fock vectors
-                #self.basis[-1].print_info()
+        file='Sphere_Configurations_N%dM%dL%dS%d.txt'%(self.N, self.M, self.L, self.S)
+        print('Reading in configurations...')
+        with open(file, 'r') as f:
+            for line in f:
+                split_line = line.split()
+                if (split_line[0]=='N,'):
+                    continue
+                N = split_line[0]
+                M = split_line[1]
+                L = split_line[2]
+                S = split_line[3]
+                basis = []
+                config = split_line[4:]
+                for item in config:
+                    basis.append(int(item))
+                #print(N, M, L, len(config), len(basis))
+                #print(config, basis)
+                #print(self.N, N, self.M, M)
+                assert int(N) == self.N and int(M) == self.M and int(M) == 2*(self.S) +1
+                vector = fock_vector(int(N), int(M), np.array(basis), int(S))
+                assert vector.ang_mom() == self.L
+                vector = fock_vector(int(N), int(M), np.array(basis), S= int(S), index=index)
+                self.basis.append(vector)
                 index += 1
+                if (index % 100 == 0):
+                    print('Index ', index)
+            
+        print('Basis generation complete')
+        print('Fock space size: ', self.fock_size)
+                
+        self.basis = np.array(self.basis)
         self.fock_size = index
         self.many_body_H = np.zeros((self.fock_size, self.fock_size))
+        #print(config_input[i], i)
+          
+    def diag_entry(self, basis):
+        '''
+        Returns diagonal entry for contact repulsion Hamiltonian
+        '''
+        assert len(self.basis) == self.fock_size # Check if basis generation has not been invoked
+        diag_element = 0
         
+        occup_basis = np.sort(basis.occup_basis)
+        #print(basis.print_info())
+        #print(occup_basis)
+        for index in range(len(occup_basis)):
+            i = occup_basis[index]
+            if basis.occups[i] > 1:
+                #print(i)
+                # Half factor comes from Hamiltonian definition
+                diag_element += 0.5*self.matrix_overlap_sphere(i- self.S, i- self.S, i- self.S, i- self.S)\
+                                *basis.occups[i]*(basis.occups[i]-1)
+            # we only have to consider non-equal i, j pairs as symmetry
+            # gives equal elements for ijij jiij, ijji, jiji basis indices
+ 
+            for jndex in range(index+1, len(occup_basis)):
+                j = occup_basis[jndex]
+                #print(i, j)
+
+                diag_element += 2*self.matrix_overlap_sphere(i - self.S, j- self.S, i- self.S, j- self.S)\
+                                *basis.occups[i]*(basis.occups[j])
+        return diag_element
+    
+    def construct_off_diag_entries(self, basis):
+            
+            off_diag_element = 0
+            occup_basis = np.sort(basis.occup_basis)
+            new_occups = np.zeros(self.M)
+            for index in range(len(occup_basis)):
+                i = occup_basis[index]
+                
+                for jndex in range(index, len(occup_basis)):
+                    j = occup_basis[jndex]
+                    for k in range(self.M):
+                        new_occups = np.zeros(self.M)
+                        new_basis_index = None
+                        l = i + j - k
+                        if (l >= self.M or l < 0):
+                            continue
+                        if (k == i or k == j or l == k or l == i or l == j):
+                            continue
+                        if (i != j):
+                            # Copy basis occupation
+                            for q in basis.occup_basis:
+                                new_occups[q] = basis.occups[q]
+                            # Construct basis with non-zero entry
+                            new_occups[i] = basis.occups[i] - 1
+                            new_occups[j] = basis.occups[j] - 1
+                            if (k in basis.occups):
+                                new_occups[k] = basis.occups[k] + 1
+                            else:
+                                new_occups[k] =  1
+                                
+                            if (l in basis.occups):
+                                new_occups[l] = basis.occups[l] + 1
+                            else:
+                                new_occups[l] = 1
+                                
+                            new_fock = fock_vector(self.N, self.M, new_occups)
+                            new_basis_index = None
+                            # Search newly constructed basis index
+                            for basis2 in self.basis:
+                                if basis2.occups == new_fock.occups:
+                                    if (basis2.index != basis.index):
+                                        new_basis_index = basis2.index
+                                        break
+                            if (new_basis_index is None):
+                                print('New basis not in Hamiltonian space')
+                                print(new_fock.print_info)
+                                self.show_basis()
+                                assert 0
+                            
+                            # Assign matrix element
+                            self.many_body_H[basis.index, new_basis_index] = \
+                            2*np.sqrt(basis.occups[i]*basis.occups[j]*new_occups[k]*new_occups[l])*self.matrix_overlap_sphere(i - self.S, j- self.S, k- self.S, l- self.S)
+                            self.many_body_H[new_basis_index, basis.index] = self.many_body_H[basis.index, new_basis_index]
+                            
+                        else:
+                            if (basis.occups[i] < 2):
+            
+                                continue
+                            # Construct basis with non-zero entry for i = j
+                            for q in basis.occup_basis:
+                                new_occups[q] = basis.occups[q]
+                            # See Wilkin paper for angular momentum transfer rules
+                            new_occups[i] = basis.occups[i] - 2
+                            if (k in basis.occups):
+                                new_occups[k] = basis.occups[k] + 1
+                            else:
+                                new_occups[k] =  1
+                                
+                            if (l in basis.occups):
+                                new_occups[l] = basis.occups[l] + 1
+                            else:
+                                new_occups[l] = 1
+                                
+                            new_fock = fock_vector(self.N, self.M, new_occups)
+                            new_basis_index = None
+                            # Search newly constructed basis index
+                            for basis2 in self.basis:
+                                if basis2.occups == new_fock.occups:
+                                    if (basis2.index != basis.index):
+                                        new_basis_index = basis2.index
+                                        break
+                            if (new_basis_index is None):
+                                print('New basis not in Hamiltonian space')
+                                print(new_fock.print_info)
+                                self.show_basis()
+                                assert 0
+                            
+                            # Assign matrix element
+                            self.many_body_H[basis.index, new_basis_index] = \
+                            np.sqrt(basis.occups[i]*(basis.occups[i]-1)*new_occups[k]*new_occups[l])*self.matrix_overlap_sphere(i- self.S, j- self.S, k- self.S, l- self.S)
+                            self.many_body_H[new_basis_index, basis.index] = self.many_body_H[basis.index, new_basis_index]
+    
+    def construct_Hamiltonian_fast(self):
+        # Wilkin exact eigenstates paper prescription
+        assert len(self.basis) == self.fock_size # Check if basis generation has not been invoked
+    
+        # Diagonal entries
+        #print(self.basis)
+        print('Hamiltonian construction...')
+        print('Fock size: ', self.fock_size)
+        counter = 1
+        for basis in self.basis:
+            self.many_body_H[basis.index, basis.index] = self.diag_entry(basis)
+            self.construct_off_diag_entries(basis)
+            if (counter % 100 == 0):
+                print('Fast Hamiltonian construction progress [%] ', (counter/self.fock_size)*100)
+            counter += 1
+            
     def H_element(self, basis1, basis2):
         '''
         Calculate matrix element between 2 many-body basis states
@@ -129,11 +300,10 @@ class sphere_Hamiltonian(Hamiltonian):
                             element += 0.5*matrix_overlap*self.overlap(new_basis1, new_basis2)*total_prefactor_1*total_prefactor_2
                             #print('Overlap: ', self.overlap(new_basis1, new_basis2))
         return element
-'''
-H = sphere_Hamiltonian(N=5, M=9, S=4, L=2)
+
+H = sphere_Hamiltonian_fast(N=5, M=9, S=4, L=2)
 H.generate_basis()
-print('Fock size', H.fock_size)
-H.construct_Hamiltonian()
-H.show_basis()
+#print('Fock size', H.fock_size)
+H.construct_Hamiltonian_fast()
+#H.show_basis()
 H.print_matrix(H.many_body_H)
-'''

@@ -16,16 +16,17 @@ import copy
 
 from Fock_vector import fock_vector
 import Ryser_Algorithm as ryser
-import Sphere_Hamiltonian as sphere
-import Disc as disc
+from Sphere import sphere_Hamiltonian_fast
 import config as configs
 from numpy import linalg as la
 
 
 
-N0 = 4
-M = N0*(N0-1)
-mu = N0**2/(2*M)
+N0 = 8
+S = 7
+M = 2*S + 1
+L = M
+mu = N0/(2*S)
 
 
 #N_range = np.array([N0-1,N0, N0+1])
@@ -43,13 +44,13 @@ for N in range(N0+1):
     print('SIM PARAMS')
     print('N ', N)
     N_range = np.array([N-1,N, N+1])
-    if N == 0 or N == 1 or N==2:
+    if N == 0 or N == 1 or N==2 or N==3:
         gap.append(0)
     else:
         for i in N_range:
             print('Gap loop')
-            print('N, M, L', i, N*(N-1), N*(N-1))
-            H = disc.disc_Hamiltonian_fast(N = i, M = N*(N-1), L = N*(N-1))
+            print('N, M, L, S', i, M, L, S)
+            H = sphere_Hamiltonian_fast(i, M, S, L)
             H.generate_basis()
             H.construct_Hamiltonian_fast()
             evalues,evecs = H.diagonalise()
@@ -62,7 +63,7 @@ for N in range(N0+1):
                                         
         gap.append(N*(eplus + eminus - 2*e))
 
-with open('Disc_Gap_Spectrum_Laughlin.txt', 'a') as f:
+with open('Sphere_Gap_Spectrum_Laughlin.txt', 'a') as f:
     for i in range(N0+1):
         f.write('N '+str(i))
         f.write('\n')
@@ -82,17 +83,17 @@ params = {
 plt.rcParams.update(params)
 
 plt.figure(1)
-plt.title('Disc Geometry (Contact repulsion) \n No. Landau levels M = N*(N-1) Total ang. mom. L = N*(N-1) \n Half filling')
+plt.title('Sphere Geometry (Contact repulsion) \n No. Landau levels M = 2*S + 1  \n Half filling')
 plt.ylabel('Energy gap [$V_0$]')
 plt.xlabel('$N_0$')
 plt.plot(range(N0+1), gap, 'x', color='red')
 plt.grid()
-plt.savefig('Disc_Gap_Spectrum_Laughlin1.jpeg')
+plt.savefig('Sphere_Gap_Spectrum_Laughlin1_N%d.jpeg'%(N0))
 
 plt.figure(2)
-plt.title('Disc Geometry (Contact repulsion) \n No. Landau levels M = N*(N-1) Total ang. mom. L = N*(N-1) \n Half filling')
+plt.title('Sphere Geometry (Contact repulsion) \n No. Landau levels M = 2*S + 1  \n Half filling')
 plt.ylabel('Energy gap [$V_0$]')
 plt.xlabel('1/$N_0$')
 plt.plot(1/np.array(range(N0+1))[1:], gap[1:], 'x', color='red')
 plt.grid()
-plt.savefig('Disc_Gap_Spectrum_Laughlin2.jpeg')
+plt.savefig('Sphere_Gap_Spectrum_Laughlin2_N%d.jpeg'%(N0))

@@ -107,6 +107,63 @@ def disc_config_fast(N, M, L):
                 
         
     assert counter == int(math.factorial(N+M-1)/math.factorial(M-1)/math.factorial(N))
+
+def sphere_config_fast(N, M, L, S):
+    M = 2*S + 1 
+    S0 = S
+    n = N
+    m = M-1
+    counter = 0
+
+    #print('configurations', config_input)
+    for i in range(-L,L+1):
+        if exists('Sphere_Configurations_N%dM%dL%dS%d.txt'%(N, M, i, S0)):
+            #print('Configurations have already been generated for N %d M %d L %d '%(N, M, i))
+            if (i == L):
+                return
+            continue
+        with open('Sphere_Configurations_N%dM%dL%dS%d.txt'%(N, M, i, S0), 'a') as f:
+            f.write('N,   M,    L,    S,    Basis \n')
+    f.close()
+    
+    subspace_size = np.zeros(L+1)
+    for id in range(generator.get_sum(n,m)+1):
+        basis = np.array(generator.get_basis(n,id))
+        if len(basis) != M:
+            basis = np.array(np.concatenate((np.array(basis), np.zeros(abs(len(basis)-M)))))
+        basis = basis.astype(int)
+
+        vector = fock_vector(N, M, basis, S = S0)
+        ang_mom = vector.ang_mom()
+        if abs(ang_mom) > L:
+            if (counter % 1000 == 0):
+                size = int(math.factorial(N+M-1)/math.factorial(M-1)/math.factorial(N))
+                print('Basis generation progress [%] ', (counter/size)*100)
+            counter += 1
+            continue
+        else:
+            with open('Sphere_Configurations_N%dM%dL%dS%d.txt'%(N, M, ang_mom, S0), 'a') as f:
+                f.write('%d   %d   %d   %d  '%(N,M,ang_mom, S0))
+                for num in basis:
+                    f.write(str(num)+' ')
+                f.write('\n')
+            subspace_size[ang_mom] += 1
+        
+        if (counter % 10000 == 0):
+            size = int(math.factorial(N+M-1)/math.factorial(M-1)/math.factorial(N))
+            print('Basis generation progress [%] ', (counter/size)*100)
+        counter += 1
+    
+    with open('Stats_Sphere_Configurations_N%dM%dL%dS%d.txt'%(N, M, L, S0), 'a') as f:
+                f.write('N = %d M =  %d L_max =  %d  S = %d   \n'%(N,M,L,S0))
+                for index in range(len(subspace_size)):
+                    f.write('L= '+str(index)+' subspace size: '+str(subspace_size[index])+' \n')
+                f.write('\n')
+        
+    assert counter == int(math.factorial(N+M-1)/math.factorial(M-1)/math.factorial(N))
+
+
+#sphere_config_fast(10,5,10,5)
 #@disc_config_fast(5, 5, 5)
 #Test case
 #disc_config_fast(10, 30, 30)

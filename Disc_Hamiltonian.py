@@ -34,6 +34,14 @@ class disc_Hamiltonian(Hamiltonian):
         self.tolerance = 1e-10
         self. L = L # Restrict total angular momentum for each Fock vector
     
+    def fock_size(self):
+        '''
+        Number of many-body basis states formed by repeated combinations
+        Choose N excitations repeatadly on M basis states
+        '''
+        return int(math.factorial(self.N+self.M-1)/\
+               (math.factorial(self.N)*math.factorial(self.M-1)))
+    
     def generate_basis(self):
         '''
         Generate many-body basis states from repeated combinations
@@ -41,7 +49,7 @@ class disc_Hamiltonian(Hamiltonian):
         '''
         config_input = np.array(configs.configurations(self.N, self.M)) # Calculate repeated combinations
         #print('configurations', config_input)
-        assert len(config_input) == self.fock_size # Check dimensionality
+        #assert len(config_input) == self.fock_size # Check dimensionality
         
         index = 0
         for i in range(len(config_input)):
