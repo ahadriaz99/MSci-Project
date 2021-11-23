@@ -16,6 +16,8 @@ from os import mkdir
 import os
 from os import system
 
+from const_l_gen import gen_bases
+
 def configurations(N, M):
     ''' the function is used to implement a algorithm to find all the possible 
     configurations for a given number of particles (N) and number of states (M)
@@ -55,11 +57,45 @@ def disc_config(N,M,L):
                 f.write('\n')
     f.close()
     
+def disc_config_very_fast(N, M, L):
+    
+    m = M-1
+    counter = 0
+
+    for i in range(0,L+1):
+        if exists('Disc_Configurations_N%dM%dL%d.txt'%(N, M, i)):
+            #print('Configurations have already been generated for N %d M %d L %d '%(N, M, i))
+            if (i == L):
+                return
+            continue
+        with open('Disc_Configurations_N%dM%dL%d.txt'%(N, M, i), 'a') as f:
+            f.write('N,   M,    L,    Basis \n')
+        f.close()
+        
+        bases = gen_bases(N, i)
+        
+        with open('Disc_Configurations_N%dM%dL%d.txt'%(N, M, i), 'a') as f:
+            for basis in bases:
+                f.write(str(N)+' '+str(M)+' '+str(i)+'    ')
+                if len(basis) != M:
+                    basis = np.array(np.concatenate((np.array(basis),np.zeros(abs(len(basis)-M)))))
+                    basis = basis.astype(int)
+                for j in range(len(basis)):
+                    f.write(str(basis[j])+' ')
+                f.write('\n')
+        
+                counter += 1
+        f.close()
+                
+        print('Basis generation progress [%] ', (i/L)*100)
+            
+            
+    
 def disc_config_fast(N, M, L):
     n = N
     m = M-1
     counter = 0
-
+    
     #print('configurations', config_input)
     for i in range(0,L+1):
         if exists('Disc_Configurations_N%dM%dL%d.txt'%(N, M, i)):
@@ -166,6 +202,6 @@ def sphere_config_fast(N, M, L, S):
 #sphere_config_fast(10,5,10,5)
 #@disc_config_fast(5, 5, 5)
 #Test case
-#disc_config_fast(10, 30, 30)
+#disc_config_very_fast(6, 30, 30)
 #configurations(2,2)
 #configurations(3,2)
