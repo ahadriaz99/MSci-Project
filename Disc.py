@@ -57,7 +57,7 @@ class disc_Hamiltonian_fast(Hamiltonian):
         '''
         # If basis generation has not been invoked, generate basis
         print('Basis generation...')
-        configs.disc_config_fast(int(self.N), int(self.M), int(self.L))
+        configs.disc_config_very_fast(int(self.N), int(self.M), int(self.L))
         index = 0
         file='Disc_Configurations_N%dM%dL%d.txt'%(self.N, self.M, self.L)
         print('Reading in configurations...')
@@ -186,6 +186,7 @@ class disc_Hamiltonian_fast(Hamiltonian):
                         
                     else:
                         if (basis.occups[i] < 2):
+        
                             continue
                         # Construct basis with non-zero entry for i = j
                         for q in basis.occup_basis:

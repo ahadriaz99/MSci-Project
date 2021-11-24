@@ -43,13 +43,14 @@ class sphere_Hamiltonian(Hamiltonian):
         self.L = L
         self.V0 = 1
         self.v = np.zeros((self.M, self.M))
-        for index in range(self.M):
-            for jndex in range(self.M):
-                i = index - self.S
-                j = jndex - self.S
-                self.v[index, jndex] = np.sqrt(float(math.factorial(self.S+(i+j))*math.factorial(self.S-(i+j))))/\
-                               np.sqrt(float(math.factorial(self.S + i)*math.factorial(self.S - i)*\
-                                             math.factorial(self.S - j)*math.factorial(self.S - j)))
+        #for index in range(self.M):
+        #    for jndex in range(self.M):
+        #        i = index - self.S
+        #        j = jndex - self.S
+        #        print(i,j)
+        #        self.v[index, jndex] = np.sqrt(float(math.factorial(self.S+(i+j))*math.factorial(self.S-(i+j))))/\
+        #                       np.sqrt(float(math.factorial(self.S + i)*math.factorial(self.S - i)*\
+         #                                    math.factorial(self.S + j)*math.factorial(self.S - j)))
         
           
     def matrix_overlap_sphere(self, i, j, k, l):
@@ -77,7 +78,9 @@ class sphere_Hamiltonian(Hamiltonian):
         and index them
         '''
         config_input = np.array(configs.configurations(self.N, self.M)) # Calculate repeated combinations
-        assert len(config_input) == self.fock_size # Check dimensionality
+        #print(len(config_input))
+        #print(self.fock_size)
+        #assert len(config_input) == self.fock_size # Check dimensionality
         
         index = 0
         for i in range(len(config_input)):
@@ -136,11 +139,11 @@ class sphere_Hamiltonian(Hamiltonian):
                             element += 0.5*matrix_overlap*self.overlap(new_basis1, new_basis2)*total_prefactor_1*total_prefactor_2
                             #print('Overlap: ', self.overlap(new_basis1, new_basis2))
         return element
-'''
-H = sphere_Hamiltonian(N=5, M=9, S=4, L=2)
-H.generate_basis()
-print('Fock size', H.fock_size)
-H.construct_Hamiltonian()
-H.show_basis()
-H.print_matrix(H.many_body_H)
-'''
+    
+#H = sphere_Hamiltonian(N=5, M=5, S=2, L=2)
+#H.generate_basis()
+#print('Fock size', H.fock_size)
+#H.construct_Hamiltonian()
+#H.show_basis()
+#H.print_matrix(H.many_body_H)
+

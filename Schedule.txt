@@ -1,0 +1,32 @@
+Weekly schedule updated periodically for distributing tasks.
+
+-- 18/11/21 -- 
+
+Ahad
+1. Attempt Wilkin procedure for optimising the spherical Hamiltonian generation
+	a. Test if same procedure produces correct elements by adapting Disc_Testing.py for sphere 
+	b. If not, adapt the off-diagonal construction to include negative angular momentum transfers within 
+	   the basis occupations
+Marcell
+2. Optimisation for basis generation using the 'Wall algorithm'
+	a. Derek's zero momentum transfer wall move can be systematically applied to produce only L 
+	   conserving basis states (question: does it produce all of them?)
+	b. Create recursive algorithm for generating wall positions for allowed wall moves
+	   starting from putting a single particle in the m=L state and the rest in m=0 state
+        c. test that basis sets are equivalent
+Marcell
+3. Expressing the current density in occupation number representation
+	a. Finding single Landau level matrix overlap of current operator
+	b. Algorithm for constructing the many-body current operator expectation 
+	   and uncertainty 
+
+4. (Optional) Analytic formula for the no. bases with fixed N, L, M
+5. Discussion with Robert regarding FCIQMC -- next week Marcell/Ahad
+Ahad 
+6. Plotting the density of states for the degeneracies of the disc exact spectra
+	a. Is the ground state degeneracy different for Laughlin/non-Laughlin?
+	b. Histograms showing the occurences of eigenvalues (be careful with tolerances with 0
+           energy ground state) in a particular L state spectrum
+	c. This script should read in the eigenvalues from the saved .txt spectra and only plot, 
+	   no need to rerun simulation
+ 

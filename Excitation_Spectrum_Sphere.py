@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-""""
-Testing script for identifying incompressible liquid phases at half-filling
+"""
+Excitation Spectrum for Spherical Geometry
 
 25/10/21
 
@@ -12,17 +12,20 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 import copy
+import timeit
 
 from Fock_vector import fock_vector
+from Sphere_Hamiltonian import sphere_Hamiltonian
+from Sphere import sphere_Hamiltonian_fast
 import Ryser_Algorithm as ryser
-import Sphere_Hamiltonian as sphere
-import Disc as disc
 import config as configs
 from numpy import linalg as la
 
-N0 = 8
-M = 56
-mu = N0**2/(2*M)
+N0 = 3
+S = 2
+flux = 2*S
+M = 2*S + 1
+mu = N0/(2*S)
 N_range = np.array([N0-1,N0, N0+1])
 e_grounds = []
 e_values = []
@@ -31,20 +34,21 @@ gaps = []
 L_range = np.linspace(0,M,M+1)
 
 print('Basis generation...')
-configs.disc_config_very_fast(N0, M, M)
+configs.sphere_config_fast(N0, M, M, S)
 print('Basis generation complete!')
 
 for L in L_range:
     print('SIMULATION PARAMS')
     print('L ', L)
-    H = disc.disc_Hamiltonian_fast(N=N0, M = M, L = L)
-    #H = sphere.sphere_Hamiltonian(N=N0, M=2*S+1, S=S, L = L)
+    H = sphere_Hamiltonian_fast(N=N0, M = M, L = L, S=S)
     H.generate_basis()
     #H.show_basis()
     print('Fock space ', H.fock_size)
-    if (H.fock_size > 10000):
+    if (H.fock_size > 5000):
         print('Large Fock space...')
-        assert 0
+        #assert 0
+        
+
     H.construct_Hamiltonian_fast()
     #H.print_matrix(H.many_body_H)
     evalues, evecs = H.diagonalise()
@@ -53,7 +57,7 @@ for L in L_range:
     eprime_grounds.append(H.check_sign_problem())
     gaps.append(H.gap)
     
-    with open('Disc_Full_Spectrum_N%d_M%d.txt'%(N0, M), 'a') as f:
+    with open('Sphere_Full_Spectrum_N%d_M%d_S%d.txt'%(N0, M, S), 'a') as f:
         if (L == 0):
             f.write('N %d M %d \n'%(N0, M))
         f.write('L %d \n'%(L))
@@ -79,7 +83,7 @@ plt.rcParams.update(params)
 
 #Plotting the energy spectrum
 plt.figure(1)
-plt.title('Disc Geometry (Contact repulsion) \n No. bosons N = {0} No. Landau levels M = {1}'.format(N0,M))
+plt.title('Sphere Geometry (Contact repulsion) \n No. bosons N = {0} No. Landau levels M = {1} Flux Quanta 2S = {2}'.format(N0,M,flux))
 plt.xlabel('Total angular momentum L')
 plt.ylabel('Energy spectrum [$V_0$]')
 for i,j in enumerate(e_values):
@@ -87,16 +91,42 @@ for i,j in enumerate(e_values):
     #print([L_range[i]]*len(j))
     plt.plot([L_range[i]]*len(j), j, '_', markersize = 25, mew =5)
 plt.grid()
-plt.savefig('Disc_Full_Spectrum_N%d_M%d.jpeg'%(N0, M))
+plt.savefig('Sphere_Full_Spectrum_N%d_M%d_S%d.jpeg'%(N0, M,S))
+
+#first 4 evalues
+plt.figure(2)
+plt.title('Sphere Geometry (Contact repulsion) \n No. bosons N = {0} No. Landau levels M = {1} Flux Quanta 2S = {2}'.format(N0,M,flux))
+plt.xlabel('Total angular momentum L')
+plt.ylabel('Energy spectrum [$V_0$]')
+values = []
+for i in e_values:
+    values.append(i[0:4])
+print(values)
+    
+for i,j in enumerate(values):
+    print(j)
+    print([L_range[i]]*len(j))
+    #print(j)
+    #print([L_range[i]]*len(j))
+    plt.plot([L_range[i]]*len(j), j, '_', markersize = 25, mew =5)
+plt.grid()
+plt.savefig('Sphere_Low_Lying_Evalues_N%d_M%d_S%d.jpeg'%(N0, M,S))
 
 #Ground state energy spectrum
-plt.figure(2)
-plt.title('Disc Geometry (Contact repulsion) \n No. bosons N = {0} No. Landau levels M = {1}'.format(N0,M))
+plt.figure(3)
+plt.title('Sphere Geometry (Contact repulsion) \n No. bosons N = {0} No. Landau levels M = {1} Flux Quanta 2S = {2}'.format(N0,M,flux))
 plt.plot(L_range,e_grounds,'x', label = 'Hamiltonian', markersize = 15, color='red', mew=3)
 plt.plot(L_range, eprime_grounds, 'o', label = 'SP Hamiltonian', markersize = 15, color='blue')
 plt.xlabel('Total angular momentum L')
 plt.ylabel('Ground state energy [$V_0$]')
 plt.legend()
 plt.grid()
-plt.savefig('Disc_Ground_State_N%d_M%d.jpeg'%(N0, M))
+plt.savefig('Sphere_Ground_State_N%d_M%d_S%d.jpeg'%(N0, M, S))
 
+plt.figure(4)
+plt.title('Sphere Geometry (Contact repulsion) \n No. bosons N = {0} No. Landau levels M = {1} Flux Quanta 2S = {2}'.format(N0,M,flux))
+plt.plot(L_range,gaps,'x', label = 'Hamiltonian', markersize = 15, color='red', mew=3)
+plt.ylabel('Local gap $|E_0 - E_1|$ [$V_0$]')
+plt.legend()
+plt.grid()
+plt.savefig('Sphere_Local_Gap_N%d_M%d_S%d.jpeg'%(N0, M, S))
