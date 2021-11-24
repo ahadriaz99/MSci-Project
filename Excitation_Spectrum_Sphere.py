@@ -21,8 +21,8 @@ import Ryser_Algorithm as ryser
 import config as configs
 from numpy import linalg as la
 
-N0 = 10
-S = 4
+N0 = 3
+S = 2
 flux = 2*S
 M = 2*S + 1
 mu = N0/(2*S)
@@ -93,8 +93,27 @@ for i,j in enumerate(e_values):
 plt.grid()
 plt.savefig('Sphere_Full_Spectrum_N%d_M%d_S%d.jpeg'%(N0, M,S))
 
-#Ground state energy spectrum
+#first 4 evalues
 plt.figure(2)
+plt.title('Sphere Geometry (Contact repulsion) \n No. bosons N = {0} No. Landau levels M = {1} Flux Quanta 2S = {2}'.format(N0,M,flux))
+plt.xlabel('Total angular momentum L')
+plt.ylabel('Energy spectrum [$V_0$]')
+values = []
+for i in e_values:
+    values.append(i[0:4])
+print(values)
+    
+for i,j in enumerate(values):
+    print(j)
+    print([L_range[i]]*len(j))
+    #print(j)
+    #print([L_range[i]]*len(j))
+    plt.plot([L_range[i]]*len(j), j, '_', markersize = 25, mew =5)
+plt.grid()
+plt.savefig('Sphere_Low_Lying_Evalues_N%d_M%d_S%d.jpeg'%(N0, M,S))
+
+#Ground state energy spectrum
+plt.figure(3)
 plt.title('Sphere Geometry (Contact repulsion) \n No. bosons N = {0} No. Landau levels M = {1} Flux Quanta 2S = {2}'.format(N0,M,flux))
 plt.plot(L_range,e_grounds,'x', label = 'Hamiltonian', markersize = 15, color='red', mew=3)
 plt.plot(L_range, eprime_grounds, 'o', label = 'SP Hamiltonian', markersize = 15, color='blue')
@@ -103,7 +122,8 @@ plt.ylabel('Ground state energy [$V_0$]')
 plt.legend()
 plt.grid()
 plt.savefig('Sphere_Ground_State_N%d_M%d_S%d.jpeg'%(N0, M, S))
-plt.figure(3)
+
+plt.figure(4)
 plt.title('Sphere Geometry (Contact repulsion) \n No. bosons N = {0} No. Landau levels M = {1} Flux Quanta 2S = {2}'.format(N0,M,flux))
 plt.plot(L_range,gaps,'x', label = 'Hamiltonian', markersize = 15, color='red', mew=3)
 plt.ylabel('Local gap $|E_0 - E_1|$ [$V_0$]')

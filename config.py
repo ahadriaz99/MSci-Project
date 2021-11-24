@@ -152,7 +152,7 @@ def sphere_config_fast(N, M, L, S):
     counter = 0
 
     #print('configurations', config_input)
-    for i in range(-L,L+1):
+    for i in range(0,L+1):
         if exists('Sphere_Configurations_N%dM%dL%dS%d.txt'%(N, M, i, S0)):
             #print('Configurations have already been generated for N %d M %d L %d '%(N, M, i))
             if (i == L):
@@ -171,7 +171,7 @@ def sphere_config_fast(N, M, L, S):
 
         vector = fock_vector(N, M, basis, S = S0)
         ang_mom = vector.ang_mom()
-        if abs(ang_mom) > L:
+        if ang_mom > L or ang_mom < 0:
             if (counter % 1000 == 0):
                 size = int(math.factorial(N+M-1)/math.factorial(M-1)/math.factorial(N))
                 print('Basis generation progress [%] ', (counter/size)*100)

@@ -73,7 +73,7 @@ class sphere_Hamiltonian_fast(Hamiltonian):
             #print(sum_SM)
             
             return self.V0*((math.factorial(2*S+1))**2 * math.factorial(2*S + i + j) *
-                                         math.factorial(2*S - i - j))/(S * math.factorial(4*S + 1) * np.sqrt(float(sum_SM)))
+                            math.factorial(2*S - i - j))/(S * math.factorial(4*S + 1) * np.sqrt(float(sum_SM)))
             #return self.V0*self.v[i + self.S, j + self.S]*self.v[k + self.S, l + self.S]
         
     def generate_basis(self):
@@ -98,6 +98,7 @@ class sphere_Hamiltonian_fast(Hamiltonian):
                 S = split_line[3]
                 basis = []
                 config = split_line[4:]
+                print(config)
                 for item in config:
                     basis.append(int(item))
                 #print(N, M, L, len(config), len(basis))
@@ -301,9 +302,9 @@ class sphere_Hamiltonian_fast(Hamiltonian):
                             #print('Overlap: ', self.overlap(new_basis1, new_basis2))
         return element
 
-H = sphere_Hamiltonian_fast(N=5, M=9, S=4, L=2)
-H.generate_basis()
+#H = sphere_Hamiltonian_fast(N=5, M=9, S=4, L=2)
+#H.generate_basis()
 #print('Fock size', H.fock_size)
-H.construct_Hamiltonian_fast()
+#H.construct_Hamiltonian_fast()
 #H.show_basis()
-H.print_matrix(H.many_body_H)
+#H.print_matrix(H.many_body_H)
