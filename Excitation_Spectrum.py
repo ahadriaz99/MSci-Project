@@ -20,8 +20,8 @@ import Disc as disc
 import config as configs
 from numpy import linalg as la
 
-N0 = 8
-M = 56
+N0 = 4
+M = 12
 mu = N0**2/(2*M)
 N_range = np.array([N0-1,N0, N0+1])
 e_grounds = []
@@ -46,7 +46,7 @@ for L in L_range:
         print('Large Fock space...')
         assert 0
     H.construct_Hamiltonian_fast()
-    #H.print_matrix(H.many_body_H)
+    H.print_matrix(H.many_body_H)
     evalues, evecs = H.diagonalise()
     e_values.append(evalues)
     e_grounds.append(H.e_ground)

@@ -21,8 +21,8 @@ import Ryser_Algorithm as ryser
 import config as configs
 from numpy import linalg as la
 
-N0 = 3
-S = 2
+N0 = 5
+S = 4
 flux = 2*S
 M = 2*S + 1
 mu = N0/(2*S)
@@ -36,11 +36,11 @@ L_range = np.linspace(0,M,M+1)
 print('Basis generation...')
 configs.sphere_config_fast(N0, M, M, S)
 print('Basis generation complete!')
-
+#%%
 for L in L_range:
     print('SIMULATION PARAMS')
     print('L ', L)
-    H = sphere_Hamiltonian_fast(N=N0, M = M, L = L, S=S)
+    H = sphere_Hamiltonian_fast(N=N0, M = M, S=S, L=L)
     H.generate_basis()
     #H.show_basis()
     print('Fock space ', H.fock_size)
@@ -52,6 +52,7 @@ for L in L_range:
     H.construct_Hamiltonian_fast()
     #H.print_matrix(H.many_body_H)
     evalues, evecs = H.diagonalise()
+    print('number of evalues', len(evalues))
     e_values.append(evalues)
     e_grounds.append(H.e_ground)
     eprime_grounds.append(H.check_sign_problem())
@@ -101,11 +102,11 @@ plt.ylabel('Energy spectrum [$V_0$]')
 values = []
 for i in e_values:
     values.append(i[0:4])
-print(values)
+#print(values)
     
 for i,j in enumerate(values):
-    print(j)
-    print([L_range[i]]*len(j))
+    #print(j)
+    #print([L_range[i]]*len(j))
     #print(j)
     #print([L_range[i]]*len(j))
     plt.plot([L_range[i]]*len(j), j, '_', markersize = 25, mew =5)

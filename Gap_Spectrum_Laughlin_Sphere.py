@@ -22,10 +22,10 @@ from numpy import linalg as la
 
 
 
-N0 = 8
-S = 7
+N0 = 6
+S = 5
 M = 2*S + 1
-L = M
+L = 8
 mu = N0/(2*S)
 
 

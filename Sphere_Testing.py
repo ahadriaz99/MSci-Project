@@ -30,7 +30,7 @@ def check_matrix(tolerance, M1, M2):
                    tolerance
             assert abs(M1[i, j] - M2[i, j]) <\
                    tolerance
-N = 6
+N = 4
 S = 3
 M = 2*S + 1
 L_max = M
