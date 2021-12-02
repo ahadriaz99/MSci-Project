@@ -126,7 +126,7 @@ class disc_Hamiltonian(Hamiltonian):
         '''
         Output matrix elements in the Bose dump format
         '''
-        with open('Disc_Overlaps_N%dM%dL%d.txt'%(self.N, self.M, self.L), 'a') as f:
+        with open('Disc_Overlaps_N%dM%dL%d.txt'%(self.N, self.M, self.L), 'w') as f:
             f.write('&FCI NMODE= %d, NBOSON= %d\n&END\n'%(self.M, self.N))
             for i in range(self.M):
                 for j in range(self.M):
@@ -134,11 +134,8 @@ class disc_Hamiltonian(Hamiltonian):
                         for l in range(self.M):
                             matrix_overlap = self.matrix_overlap_disc(i, j, k, l)
                             if (abs(matrix_overlap) > self.tolerance):
-                                f.write(('%5.10f %d %d %d %d \n'%(matrix_overlap, (i+1), (j+1), (k+1), (l+1))))
+                                f.write(('%5.10f %d %d %d %d \n'%(matrix_overlap, (i+1), (k+1), (j+1), (l+1))))
         f.close()
-                                
-                
-            
 
 #H = disc_Hamiltonian(N=5,M=5,L=15)
 #H.generate_basis()

@@ -28,7 +28,7 @@ e_grounds = []
 e_values = []
 eprime_grounds = [] # For sign problems
 gaps = []
-L_range = np.linspace(0,M,M+1)
+L_range = np.linspace(0,M-1,M)
 
 print('Basis generation...')
 configs.disc_config_very_fast(N0, M, M)
