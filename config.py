@@ -212,7 +212,47 @@ def sphere_config_fast(N, M, L, S):
         
     assert counter == int(math.factorial(N+M-1)/math.factorial(M-1)/math.factorial(N))
 
+def sphere_config_very_fast(N, M, L, S):
+    M = 2*S + 1 
+    S0 = S
+    m = M-1
+    counter = 0
 
+    for i in range(0,L+1):
+        if exists('Sphere_Configurations_N%dM%dL%dS%d.txt'%(N, M, i, S0)):
+            #print('Configurations have already been generated for N %d M %d L %d '%(N, M, i))
+            if (i == L):
+                return
+            continue
+        with open('Sphere_Configurations_N%dM%dL%dS%d.txt'%(N, M, i, S0), 'a') as f:
+            f.write('N,   M,    L,    S,    Basis \n')
+        f.close()
+        
+        bases = gen_bases(N, i)
+        
+        with open('Sphere_Configurations_N%dM%dL%dS%d.txt'%(N, M, i, S0), 'a') as f:
+            for basis in bases:
+                if len(basis) > M:
+                    #basis = basis[:M]
+                   # assert len(basis) == M
+
+                    if np.array(basis[M:]).any() != 0:
+                        continue
+                    else:
+                        basis = basis[:M]
+                        
+                f.write(str(N)+' '+str(M)+' '+str(i)+'    '+ str(S) + '    ')
+                if len(basis) != M:
+                    basis = np.array(np.concatenate((np.array(basis),np.zeros(abs(len(basis)-M)))))
+                    basis = basis.astype(int)
+                for j in range(len(basis)):
+                    f.write(str(basis[j])+' ')
+                f.write('\n')
+        
+                counter += 1
+        f.close()
+                
+        print('Basis generation progress [%] ', (i/L)*100)
 #sphere_config_fast(10,5,10,5)
 #@disc_config_fast(5, 5, 5)
 #Test case
