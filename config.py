@@ -76,7 +76,7 @@ def disc_config_very_fast(N, M, L):
 
         with open('Disc_Configurations_N%dM%dL%d.txt'%(N, M, i), 'a') as f:
             for basis in bases:
-                print('Raw generated basis: ',basis)
+                #print('Raw generated basis: ',basis)
                 if len(basis) > M:
                     #basis = basis[:M]
                    # assert len(basis) == M
@@ -96,7 +96,7 @@ def disc_config_very_fast(N, M, L):
                     f.write(str(basis[j])+' ')
                 f.write('\n')
                 
-                print('Formatted basis: ',basis)
+                #print('Formatted basis: ',basis)
                 counter += 1
         f.close()
                 
@@ -158,7 +158,7 @@ def disc_config_fast(N, M, L):
     assert counter == int(math.factorial(N+M-1)/math.factorial(M-1)/math.factorial(N))
 
 def sphere_config_fast(N, M, L, S):
-    assert M = 2*S + 1
+    assert M == 2*S + 1
     S0 = S
     n = N
     m = M-1
