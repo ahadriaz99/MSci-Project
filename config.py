@@ -58,7 +58,7 @@ def disc_config(N,M,L):
     f.close()
     
 def disc_config_very_fast(N, M, L):
-    
+    print('N, M, L ', N, M, L )
     m = M-1
     counter = 0
 
@@ -73,17 +73,30 @@ def disc_config_very_fast(N, M, L):
         f.close()
         
         bases = gen_bases(N, i)
-        
+
         with open('Disc_Configurations_N%dM%dL%d.txt'%(N, M, i), 'a') as f:
             for basis in bases:
+                print('Raw generated basis: ',basis)
+                if len(basis) > M:
+                    #basis = basis[:M]
+                   # assert len(basis) == M
+
+                    if np.array(basis[M:]).any() != 0:
+                        continue
+                    else:
+                        basis = basis[:M]
+                    
                 f.write(str(N)+' '+str(M)+' '+str(i)+'    ')
-                if len(basis) != M:
+                if len(basis) < M:
                     basis = np.array(np.concatenate((np.array(basis),np.zeros(abs(len(basis)-M)))))
                     basis = basis.astype(int)
+                    assert len(basis) == M
+
                 for j in range(len(basis)):
                     f.write(str(basis[j])+' ')
                 f.write('\n')
-        
+                
+                print('Formatted basis: ',basis)
                 counter += 1
         f.close()
                 
@@ -110,7 +123,7 @@ def disc_config_fast(N, M, L):
     subspace_size = np.zeros(L+1)
     for id in range(generator.get_sum(n,m)+1):
         basis = np.array(generator.get_basis(n,id))
-        if len(basis) != M:
+        if len(basis) < M:
             basis = np.array(np.concatenate((np.array(basis), np.zeros(abs(len(basis)-M)))))
         basis = basis.astype(int)
 
@@ -145,7 +158,7 @@ def disc_config_fast(N, M, L):
     assert counter == int(math.factorial(N+M-1)/math.factorial(M-1)/math.factorial(N))
 
 def sphere_config_fast(N, M, L, S):
-    M = 2*S + 1 
+    assert M = 2*S + 1
     S0 = S
     n = N
     m = M-1
@@ -177,6 +190,7 @@ def sphere_config_fast(N, M, L, S):
                 print('Basis generation progress [%] ', (counter/size)*100)
             counter += 1
             continue
+        
         else:
             with open('Sphere_Configurations_N%dM%dL%dS%d.txt'%(N, M, ang_mom, S0), 'a') as f:
                 f.write('%d   %d   %d   %d  '%(N,M,ang_mom, S0))
@@ -202,6 +216,6 @@ def sphere_config_fast(N, M, L, S):
 #sphere_config_fast(10,5,10,5)
 #@disc_config_fast(5, 5, 5)
 #Test case
-#disc_config_very_fast(6, 30, 30)
+disc_config_very_fast(5, 5, 8)
 #configurations(2,2)
 #configurations(3,2)

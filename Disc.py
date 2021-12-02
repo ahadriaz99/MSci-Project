@@ -299,9 +299,9 @@ class disc_Hamiltonian_fast(Hamiltonian):
 #N = 5
 #M = 5
 #L = 5
-#H = disc_Hamiltonian_fast(N=N,M=M,L=L)
+#H = disc_Hamiltonian(N=N,M=M,L=L)
 #H.generate_basis()
-#H.construct_Hamiltonian_fast()
+#H.construct_Hamiltonian()
 #H.print_matrix(H.many_body_H)
 #H1 = disc_Hamiltonian(N=N,M=M,L=L)
 #H1.generate_basis()
@@ -322,7 +322,7 @@ class disc_Hamiltonian_fast(Hamiltonian):
 #H.print_matrix(H.construct_Hamiltonian())
 #evalues, evecs = H.diagonalise()
 #print('Hamiltonian eigenvalues [V0]')
-##print(evalues)
+#print(evalues)
 #print('Ground state energy [V0] ', H.e_ground)
 #H.check_sign_problem()
 

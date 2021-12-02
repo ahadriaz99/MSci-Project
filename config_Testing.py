@@ -38,8 +38,8 @@ def check_matrix(tolerance, M1, M2):
 
         
 N = 5
-M = N*(N-1)
-L_max = M
+M = 30
+L_max = M-1
 
 # Basis generation
 configs.disc_config_very_fast(N, M, L_max)
