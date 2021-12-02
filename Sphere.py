@@ -109,8 +109,8 @@ class sphere_Hamiltonian_fast(Hamiltonian):
                 vector = fock_vector(int(N), int(M), np.array(basis), S= int(S), index=index)
                 self.basis.append(vector)
                 index += 1
-                if (index % 100 == 0):
-                    print('Index ', index)
+                #if (index % 100 == 0):
+                #    print('Index ', index)
             
         print('Basis generation complete')
         print('Fock space size: ', self.fock_size)

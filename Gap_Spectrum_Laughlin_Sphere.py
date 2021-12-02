@@ -22,10 +22,11 @@ from numpy import linalg as la
 
 
 
-N0 = 6
-S = 5
+
+N0 = 7
+S = N0-1
 M = 2*S + 1
-L = 8
+L = S
 mu = N0/(2*S)
 
 
@@ -33,7 +34,7 @@ mu = N0/(2*S)
 e_grounds = []      
 e_values = []
 eprime_grounds = [] # For sign problems
-L_range = np.linspace(0,M,M+1)
+L_range = np.linspace(0,L,L+1)
 gap = []
 
 eplus = 0

@@ -103,7 +103,7 @@ def disc_config_very_fast(N, M, L):
         print('Basis generation progress [%] ', (i/L)*100)
             
             
-    
+
 def disc_config_fast(N, M, L):
     n = N
     m = M-1
