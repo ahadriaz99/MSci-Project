@@ -76,7 +76,7 @@ def disc_config_very_fast(N, M, L):
 
         with open('Disc_Configurations_N%dM%dL%d.txt'%(N, M, i), 'a') as f:
             for basis in bases:
-                #print('Raw generated basis: ',basis)
+                print('Raw generated basis: ',basis)
                 if len(basis) > M:
                     #basis = basis[:M]
                    # assert len(basis) == M
@@ -103,7 +103,7 @@ def disc_config_very_fast(N, M, L):
         print('Basis generation progress [%] ', (i/L)*100)
             
             
-
+    
 def disc_config_fast(N, M, L):
     n = N
     m = M-1
@@ -178,10 +178,11 @@ def sphere_config_fast(N, M, L, S):
     subspace_size = np.zeros(L+1)
     for id in range(generator.get_sum(n,m)+1):
         basis = np.array(generator.get_basis(n,id))
+        print(basis)
         if len(basis) != M:
             basis = np.array(np.concatenate((np.array(basis), np.zeros(abs(len(basis)-M)))))
         basis = basis.astype(int)
-
+        print(basis)
         vector = fock_vector(N, M, basis, S = S0)
         ang_mom = vector.ang_mom()
         if ang_mom > L or ang_mom < 0:
@@ -217,7 +218,7 @@ def sphere_config_very_fast(N, M, L, S):
     S0 = S
     m = M-1
     counter = 0
-
+    count = 0
     for i in range(0,L+1):
         if exists('Sphere_Configurations_N%dM%dL%dS%d.txt'%(N, M, i, S0)):
             #print('Configurations have already been generated for N %d M %d L %d '%(N, M, i))
@@ -230,32 +231,51 @@ def sphere_config_very_fast(N, M, L, S):
         
         bases = gen_bases(N, i)
         
-        with open('Sphere_Configurations_N%dM%dL%dS%d.txt'%(N, M, i, S0), 'a') as f:
-            for basis in bases:
-                if len(basis) > M:
-                    #basis = basis[:M]
-                   # assert len(basis) == M
-
-                    if np.array(basis[M:]).any() != 0:
-                        continue
-                    else:
-                        basis = basis[:M]
-                        
-                f.write(str(N)+' '+str(M)+' '+str(i)+'    '+ str(S) + '    ')
-                if len(basis) != M:
-                    basis = np.array(np.concatenate((np.array(basis),np.zeros(abs(len(basis)-M)))))
-                    basis = basis.astype(int)
-                for j in range(len(basis)):
-                    f.write(str(basis[j])+' ')
-                f.write('\n')
-        
+        for basis in bases:
+            print (basis)
+            if len(basis) > M:
+                     #basis = basis[:M]
+                    # assert len(basis) == M
+ 
+                if np.array(basis[M:]).any() != 0:
+                    continue
+                else:
+                    basis = basis[:M]
+            print(basis)
+            if len(basis) < M:
+                basis = np.array(np.concatenate((np.array(basis), np.zeros(abs(len(basis)-M)))))
+                basis = basis.astype(int)
+                assert len(basis) == M
+            print(basis)
+            
+            vector = fock_vector(N,M,basis, S = S0)
+            ang_mom = vector.ang_mom()
+            print(ang_mom)
+            count += 1
+            
+            if ang_mom > L or ang_mom < 0:
+                if (counter % 1000 == 0):
+                    size = int(math.factorial(N+M-1)/math.factorial(M-1)/math.factorial(N))
+                    print('Basis generation progress [%] ', (counter/size)*100)
                 counter += 1
-        f.close()
+                continue
+       
+            else:
+               with open('Sphere_Configurations_N%dM%dL%dS%d.txt'%(N, M, ang_mom, S0), 'a') as f:
+                   f.write('%d   %d   %d   %d  '%(N,M,ang_mom, S0))
+                   for num in basis:
+                       f.write(str(num)+' ')
+                   f.write('\n')
+            #print(basis)
+            ##vector = fock_vector(N,M,basis, S =S0)
+            #ang_mom = vector.ang_mom()
+            #print(basis, ang_mom)
+            
                 
-        print('Basis generation progress [%] ', (i/L)*100)
 #sphere_config_fast(10,5,10,5)
-#@disc_config_fast(5, 5, 5)
+#disc_config_very_fast(3,5 , 5)
 #Test case
-disc_config_very_fast(5, 5, 8)
+#sphere_config_fast(3, 5, 5,2)
+sphere_config_very_fast(3, 5, 15,2)
 #configurations(2,2)
 #configurations(3,2)

@@ -81,7 +81,7 @@ class sphere_Hamiltonian_fast(Hamiltonian):
         '''
         # If basis generation has not been invoked, generate basis
         print('Basis generation...')
-        configs.sphere_config_fast(int(self.N), int(self.M), int(self.L), int(self.S))
+        configs.sphere_config_very_fast(int(self.N), int(self.M), int(self.L), int(self.S))
         index = 0
         file='Sphere_Configurations_N%dM%dL%dS%d.txt'%(self.N, self.M, self.L, self.S)
         print('Reading in configurations...')
@@ -109,8 +109,8 @@ class sphere_Hamiltonian_fast(Hamiltonian):
                 vector = fock_vector(int(N), int(M), np.array(basis), S= int(S), index=index)
                 self.basis.append(vector)
                 index += 1
-                #if (index % 100 == 0):
-                #    print('Index ', index)
+                if (index % 100 == 0):
+                    print('Index ', index)
             
         print('Basis generation complete')
         print('Fock space size: ', self.fock_size)
