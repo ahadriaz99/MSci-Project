@@ -55,8 +55,14 @@ class Hamiltonian:
         # Ground state properties
         self.e_ground = None
         self.e_vector_ground = None
+        self.degen_ground = None
+        
         self.gap = None
         
+        self.evalues = None
+        self.evectors = None
+        self.degen_evectors = None
+        self.degen_evalues = None
     
     def overlap(self, fock_basis1, fock_basis2):
         '''
@@ -229,14 +235,17 @@ class Hamiltonian:
         evalues, evectors = la.eigh(self.many_body_H)
         e_ground = evalues.min()
         print('Sorting eigevalues...')
-        evalues = np.sort(np.array(evalues))
-        if self.fock_size >= 2:
-            self.gap = abs(evalues[1] - evalues[0])
+        self.evalues = np.sort(np.array(evalues))
+        self.evectors = []
         self.e_ground, self.e_vector_ground = e_ground, evectors[np.where(evalues == e_ground)]
         
+        # Sort eigenvectors accoring to eigenvalues
         
+        for i in range(len(evalues)):
+            self.evectors.append(evectors[np.where(evalues==self.evalues[i])])
+        self.evectors = np.array(self.evectors)
         
-        return evalues, evectors
+        return self.evalues, self.evectors
         
     def check_sign_problem(self):
         '''
