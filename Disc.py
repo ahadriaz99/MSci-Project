@@ -322,11 +322,11 @@ class disc_Hamiltonian_fast(Hamiltonian):
         
         for i in range(len(self.evalues)):
             self.degen_evalues.append([i])
-            self.degen_evectors.append([self.evectors[i]])
+            self.degen_evectors.append([self.evectors.T[i]])
             for j in range(i+1, len(self.evalues)):
                 if abs(self.evalues[i] - self.evalues[j]) <= self.tolerance:
                     self.degen_evalues[-1].append(j)
-                    self.degen_evectors[-1].append(self.evectors[j])
+                    self.degen_evectors[-1].append(self.evectors.T[j])
         
         degeneracy = np.zeros(len(self.evalues))
         
@@ -356,6 +356,7 @@ class disc_Hamiltonian_fast(Hamiltonian):
         
         assert (self.evalues.min() == self.evalues[0])
         assert (self.fock_size == len(self.evalues))
+        
         
         
         for ground_index in range(len(self.degen_evalues[0])):

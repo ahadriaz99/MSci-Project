@@ -259,17 +259,44 @@ class Hamiltonian:
 
         H_prime = -abs(self.many_body_H)
         H_prime[np.diag_indices(self.fock_size)] = np.diag(self.many_body_H)
-        #self.print_matrix(H_prime)
+        self.print_matrix(H_prime)
         
         evalues, evectors = la.eigh(H_prime)
         e_ground_prime = evalues.min()
         
+        # Assert unique ground state;
+        degeneracy = 0
+        degen_ground = []
+        degen_index = []
+        for i in range(len(evalues)):
+            if abs(evalues[i]-e_ground_prime) <= self.tolerance:
+                degeneracy += 1
+                degen_index.append(i)
+                degen_ground.append(evectors.T[np.where(evalues == i)])
+                
         print('Sign problem analysis')
         print('---------------------')
         print(self.e_ground, 'Ground state of phsyical H [V0]')
         print(e_ground_prime, 'Ground state of unphysical H\' [V0]')
+        print(evalues)
+        print(evectors)
+        for ground_index in degen_index:
         
-        return e_ground_prime
+            e_ground_prime_config = evectors.T[np.where(evalues==evalues[ground_index])]
+            plt.title('Stoquastic ground state configuration index %d \n'%(ground_index)+\
+                         'Disc geometry\nN = %d   M = %d   L = %d'%(self.N, self.M, self.L))
+            plt.bar(x=np.arange(1, self.fock_size+1), height=e_ground_prime_config[0])
+                #nT, binsT, patchesT =\
+                #plt.hist(x=self.degen_evectors[0][ground_index],bins=self.fock_size, color='red',alpha=0.7, rwidth=0.85, label='Full Configuration')
+            plt.xlabel('Many-body basis index')
+            plt.ylabel('Amplitude')
+            plt.grid()
+            plt.legend()
+            plt.savefig('Disc_Stoq_Ground_Config_i%d_N%d_M%d_L%d.jpeg'%(ground_index, self.N, self.M, self.L))
+            plt.close()
+        
+        
+        return e_ground_prime, evectors
         
         
         
