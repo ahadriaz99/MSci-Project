@@ -81,7 +81,7 @@ class sphere_Hamiltonian_fast(Hamiltonian):
         '''
         # If basis generation has not been invoked, generate basis
         print('Basis generation...')
-        configs.sphere_config_very_fast(int(self.N), int(self.M), int(self.L), int(self.S))
+        configs.sphere_config_fast(int(self.N), int(self.M), int(self.L), int(self.S))
         index = 0
         file='Sphere_Configurations_N%dM%dL%dS%d.txt'%(self.N, self.M, self.L, self.S)
         print('Reading in configurations...')
@@ -110,7 +110,7 @@ class sphere_Hamiltonian_fast(Hamiltonian):
                 self.basis.append(vector)
                 index += 1
                 if (index % 100 == 0):
-                    print('Index ', index)
+                    print('No. basis read-in ', index)
             
         print('Basis generation complete')
         print('Fock space size: ', self.fock_size)
@@ -309,10 +309,10 @@ class sphere_Hamiltonian_fast(Hamiltonian):
                             element += 0.5*matrix_overlap*self.overlap(new_basis1, new_basis2)*total_prefactor_1*total_prefactor_2
                             #print('Overlap: ', self.overlap(new_basis1, new_basis2))
         return element
-
-H = sphere_Hamiltonian_fast(N=2, M=3, S=1, L=0)
-H.generate_basis()
+#
+#H = sphere_Hamiltonian_fast(N=2, M=3, S=1, L=0)
+#H.generate_basis()
 #print('Fock size', H.fock_size)
-H.construct_Hamiltonian_fast()
+#H.construct_Hamiltonian_fast()
 ##H.show_basis()
-H.print_matrix(H.many_body_H)
+#H.print_matrix(H.many_body_H)

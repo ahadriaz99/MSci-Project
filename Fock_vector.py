@@ -1,5 +1,6 @@
 '''
-Class to generate bosonic Hamiltonians in occupation number representation
+Class to represent occupation number representation vectors in Fock space
+for bosonic many-body systems
 
 13/10/21
 
@@ -61,6 +62,7 @@ class fock_vector:
         assert len(np.array(occupations)) == M
         
         if (np.array(occupations).sum() == 0):
+            # Vacuum state
             return
         else:
             # Boson number conservation

@@ -26,7 +26,7 @@ from numpy import linalg as la
 N0 = 7
 S = N0-1
 M = 2*S + 1
-L = S
+L = 0
 mu = N0/(2*S)
 
 
@@ -45,10 +45,13 @@ for N in range(N0+1):
     print('SIM PARAMS')
     print('N ', N)
     N_range = np.array([N-1,N, N+1])
-    if N == 0 or N == 1 or N==2 or N==3:
+    if N == 0 or N == 1 or N==2:
         gap.append(0)
     else:
         for i in N_range:
+            S = N - 1
+            M = 2*S + 1
+            L = 0
             print('Gap loop')
             print('N, M, L, S', i, M, L, S)
             H = sphere_Hamiltonian_fast(i, M, S, L)
@@ -56,13 +59,19 @@ for N in range(N0+1):
             H.construct_Hamiltonian_fast()
             evalues,evecs = H.diagonalise()
             if i == N + 1:
-                eplus = H.e_ground/i
+                eplus = evalues.min()/i
+                print('eplus ', eplus)
             if i == N - 1:
-                eminus = H.e_ground/i
+                eminus = evalues.min()/i
+                print('eminus ', eminus)
+
             if i == N:
                 e = H.e_ground/i
+                print('eground ', e)
                                         
         gap.append(N*(eplus + eminus - 2*e))
+        print('gap ', gap[-1])
+        
 
 with open('Sphere_Gap_Spectrum_Laughlin.txt', 'a') as f:
     for i in range(N0+1):
@@ -89,7 +98,7 @@ plt.ylabel('Energy gap [$V_0$]')
 plt.xlabel('$N_0$')
 plt.plot(range(N0+1), gap, 'x', color='red')
 plt.grid()
-plt.savefig('Sphere_Gap_Spectrum_Laughlin1_N%d.jpeg'%(N0))
+plt.savefig('Sphere_Gap_Spectrum_Laughlin1_N%d_L%d.jpeg'%(N0, L))
 
 plt.figure(2)
 plt.title('Sphere Geometry (Contact repulsion) \n No. Landau levels M = 2*S + 1  \n Half filling')
@@ -97,4 +106,4 @@ plt.ylabel('Energy gap [$V_0$]')
 plt.xlabel('1/$N_0$')
 plt.plot(1/np.array(range(N0+1))[1:], gap[1:], 'x', color='red')
 plt.grid()
-plt.savefig('Sphere_Gap_Spectrum_Laughlin2_N%d.jpeg'%(N0))
+plt.savefig('Sphere_Gap_Spectrum_Laughlin2_N%d_L%d.jpeg'%(N0, L))
