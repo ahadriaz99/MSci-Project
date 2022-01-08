@@ -76,7 +76,7 @@ def disc_config_very_fast(N, M, L):
 
         with open('Disc_Configurations_N%dM%dL%d.txt'%(N, M, i), 'a') as f:
             for basis in bases:
-                print('Raw generated basis: ',basis)
+                #print('Raw generated basis: ',basis)
                 if len(basis) > M:
                     #basis = basis[:M]
                    # assert len(basis) == M
@@ -178,11 +178,11 @@ def sphere_config_fast(N, M, L, S):
     subspace_size = np.zeros(L+1)
     for id in range(generator.get_sum(n,m)+1):
         basis = np.array(generator.get_basis(n,id))
-        print(basis)
+        #print(basis)
         if len(basis) != M:
             basis = np.array(np.concatenate((np.array(basis), np.zeros(abs(len(basis)-M)))))
         basis = basis.astype(int)
-        print(basis)
+        #print(basis)
         vector = fock_vector(N, M, basis, S = S0)
         ang_mom = vector.ang_mom()
         if ang_mom > L or ang_mom < 0:
@@ -275,7 +275,7 @@ def sphere_config_very_fast(N, M, L, S):
 #sphere_config_fast(10,5,10,5)
 #disc_config_very_fast(3,5 , 5)
 #Test case
-#sphere_config_fast(3, 5, 5,2)
-sphere_config_very_fast(3, 5, 15,2)
+sphere_config_very_fast(3, 5, 5, 2)
+#sphere_config_very_fast(3, 5, 15,2)
 #configurations(2,2)
 #configurations(3,2)

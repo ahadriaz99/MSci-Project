@@ -12,6 +12,7 @@ import math
 import matplotlib.pyplot as plt
 import copy
 
+from decimal import Decimal
 from Fock_vector import fock_vector
 from Disc_Hamiltonian import disc_Hamiltonian
 import Ryser_Algorithm as ryser
@@ -44,8 +45,8 @@ class disc_Hamiltonian_fast(Hamiltonian):
                 #print(i, j)
                 ifac = math.factorial(i)
                 jfac = math.factorial(j)
-                self.v[i, j] = np.sqrt(float(math.factorial(i+j)))/\
-                               np.sqrt(float(ifac*jfac))
+                self.v[i, j] = np.sqrt(Decimal(math.factorial(i+j)))/\
+                               np.sqrt(Decimal(ifac*jfac))
                 self.v[j, i] = self.v[i, j]
                 
     def large_fac(self, I, J):
@@ -402,15 +403,15 @@ class disc_Hamiltonian_fast(Hamiltonian):
                                 if (abs(matrix_overlap) > self.tolerance):
                                     f.write(('%5.10f %d %d %d %d \n'%(matrix_overlap, (i+1), (k+1), (j+1), (l+1))))
         f.close()   
-N = 6
-M = 8
-L = 14
+N = 7
+M = 42
+L = 42
 H = disc_Hamiltonian_fast(N=N,M=M,L=L)
 H.BoseDump()
 H.BoseDump_Stochastic()
 H.generate_basis()
 H.construct_Hamiltonian_fast()
-H.print_matrix(H.many_body_H)
+#H.print_matrix(H.many_body_H)
 #H1 = disc_Hamiltonian(N=N,M=M,L=L)
 #H1.generate_basis()
 #H.show_basis()
@@ -428,11 +429,11 @@ H.print_matrix(H.many_body_H)
 #H.show_basis()
 #H.BoseDump()
 #H.print_matrix(H.construct_Hamiltonian())
-#evalues, evecs = H.diagonalise()
-#print('Hamiltonian eigenvalues [V0]')
-#print(evalues)
-#print('Ground state energy [V0] ', H.e_ground)
-#H.check_sign_problem()
+evalues, evecs = H.diagonalise()
+print('Hamiltonian eigenvalues [V0]')
+print(evalues)
+print('Ground state energy [V0] ', H.e_ground)
+H.check_sign_problem()
 
 
 #print(configs.configurations(N=3, M=10))
