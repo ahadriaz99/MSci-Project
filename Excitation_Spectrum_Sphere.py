@@ -21,8 +21,8 @@ import Ryser_Algorithm as ryser
 import config as configs
 from numpy import linalg as la
 
-N0 = 5
-S = 4
+N0 = 7
+S = 6
 flux = 2*S
 M = 2*S + 1
 mu = N0/(2*S)
@@ -31,7 +31,7 @@ e_grounds = []
 e_values = []
 eprime_grounds = [] # For sign problems
 gaps = []
-L_range = np.linspace(0,M,M+1)
+L_range = np.linspace(0,S,S+1)
 
 print('Basis generation...')
 configs.sphere_config_fast(N0, M, M, S)
@@ -55,7 +55,7 @@ for L in L_range:
     print('number of evalues', len(evalues))
     e_values.append(evalues)
     e_grounds.append(H.e_ground)
-    eprime_grounds.append(H.check_sign_problem())
+    #eprime_grounds.append(H.check_sign_problem())
     gaps.append(H.gap)
     
     with open('Sphere_Full_Spectrum_N%d_M%d_S%d.txt'%(N0, M, S), 'a') as f:
@@ -117,7 +117,7 @@ plt.savefig('Sphere_Low_Lying_Evalues_N%d_M%d_S%d.jpeg'%(N0, M,S))
 plt.figure(3)
 plt.title('Sphere Geometry (Contact repulsion) \n No. bosons N = {0} No. Landau levels M = {1} Flux Quanta 2S = {2}'.format(N0,M,flux))
 plt.plot(L_range,e_grounds,'x', label = 'Hamiltonian', markersize = 15, color='red', mew=3)
-plt.plot(L_range, eprime_grounds, 'o', label = 'SP Hamiltonian', markersize = 15, color='blue')
+#plt.plot(L_range, eprime_grounds, 'o', label = 'SP Hamiltonian', markersize = 15, color='blue')
 plt.xlabel('Total angular momentum L')
 plt.ylabel('Ground state energy [$V_0$]')
 plt.legend()

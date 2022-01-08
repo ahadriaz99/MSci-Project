@@ -395,23 +395,29 @@ class disc_Hamiltonian_fast(Hamiltonian):
                     for k in range(self.M):
                         for l in range(self.M):
                             if i == j == k == l or (k == i and l == j) or (k == j and l == i):
-                                matrix_overlap = self.matrix_overlap_disc(i, j, k, l) 
+                                matrix_overlap = -self.matrix_overlap_disc(i, j, k, l)
                                 if (abs(matrix_overlap) > self.tolerance):
                                     f.write(('%5.10f %d %d %d %d \n'%(matrix_overlap, (i+1), (k+1), (j+1), (l+1))))
                             else:
-                                matrix_overlap = - self.matrix_overlap_disc(i, j, k, l) 
+                                matrix_overlap = -self.matrix_overlap_disc(i, j, k, l) 
                                 if (abs(matrix_overlap) > self.tolerance):
                                     f.write(('%5.10f %d %d %d %d \n'%(matrix_overlap, (i+1), (k+1), (j+1), (l+1))))
         f.close()   
 N = 7
 M = 42
 L = 42
+'''
+N = 6
+M = 8
+L = 14
 H = disc_Hamiltonian_fast(N=N,M=M,L=L)
 H.BoseDump()
 H.BoseDump_Stochastic()
 H.generate_basis()
 H.construct_Hamiltonian_fast()
 #H.print_matrix(H.many_body_H)
+H.print_matrix(H.many_body_H)
+'''
 #H1 = disc_Hamiltonian(N=N,M=M,L=L)
 #H1.generate_basis()
 #H.show_basis()

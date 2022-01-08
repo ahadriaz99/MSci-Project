@@ -110,7 +110,7 @@ class sphere_Hamiltonian_fast(Hamiltonian):
                 self.basis.append(vector)
                 index += 1
                 if (index % 100 == 0):
-                    print('Index ', index)
+                    print('No. basis read-in ', index)
             
         print('Basis generation complete')
         print('Fock space size: ', self.fock_size)
@@ -312,8 +312,11 @@ class sphere_Hamiltonian_fast(Hamiltonian):
 
 H = sphere_Hamiltonian_fast(N=10, M=19, S=9, L=0)
 H.generate_basis()
+#
+#H = sphere_Hamiltonian_fast(N=2, M=3, S=1, L=0)
+#H.generate_basis()
 #print('Fock size', H.fock_size)
-H.construct_Hamiltonian_fast()
+#H.construct_Hamiltonian_fast()
 ##H.show_basis()
 #H.print_matrix(H.many_body_H)
 #evalues, evecs = H.diagonalise()

@@ -50,12 +50,12 @@ for N in N_range:
         e_grounds.append(H.e_ground)
         #print('Hamiltonian eigenvalues ')
         #print(evalues)
-        eprime_grounds.append(H.check_sign_problem())
+        #eprime_grounds.append(H.check_sign_problem())
         gap_grounds.append(N0*(eplus + eminus - 2*e))
 
 print('N0 = ', N0)
 print('S = ', S)
 print(e_grounds)
-print(eprime_grounds)
+#print(eprime_grounds)
 print(gap_grounds)
         

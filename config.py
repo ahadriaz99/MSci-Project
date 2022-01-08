@@ -96,11 +96,13 @@ def disc_config_very_fast(N, M, L):
                     f.write(str(basis[j])+' ')
                 f.write('\n')
                 
-                #print('Formatted basis: ',basis)
+                print('Basis ',basis)
                 counter += 1
+                print('Count ', counter)
+
         f.close()
                 
-        print('Basis generation progress [%] ', (i/L)*100)
+        #print('Basis generation progress [%] ', (i/L)*100)
             
             
     
@@ -146,7 +148,9 @@ def disc_config_fast(N, M, L):
         if (counter % 10000 == 0):
             size = int(math.factorial(N+M-1)/math.factorial(M-1)/math.factorial(N))
             print('Basis generation progress [%] ', (counter/size)*100)
+        print('Basis ', basis)
         counter += 1
+        print('Count ', counter)
     
     with open('Stats_Disc_Configurations_N%dM%dL%d.txt'%(N, M, L), 'a') as f:
                 f.write('N = %d M =  %d L_max =  %d     \n'%(N,M,L))
@@ -248,7 +252,7 @@ def sphere_config_very_fast(N, M, L, S):
                 assert len(basis) == M
             print(basis)
             
-            vector = fock_vector(N,M,basis, S = S0)
+            vector = fock_vector(N, M, basis, S = S0)
             ang_mom = vector.ang_mom()
             print(ang_mom)
             count += 1
@@ -276,6 +280,7 @@ def sphere_config_very_fast(N, M, L, S):
 #disc_config_very_fast(3,5 , 5)
 #Test case
 sphere_config_very_fast(3, 5, 5, 2)
+#sphere_config_fast(3, 5, 5,2)
 #sphere_config_very_fast(3, 5, 15,2)
 #configurations(2,2)
 #configurations(3,2)

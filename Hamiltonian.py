@@ -258,8 +258,8 @@ class Hamiltonian:
         print('Diagonalising stoquastic Hamiltonian...')
 
         H_prime = -abs(self.many_body_H)
-        H_prime[np.diag_indices(self.fock_size)] = np.diag(self.many_body_H)
-        self.print_matrix(H_prime)
+        #H_prime[np.diag_indices(self.fock_size)] = np.diag(self.many_body_H)
+        #self.print_matrix(H_prime)
         
         evalues, evectors = la.eigh(H_prime)
         e_ground_prime = evalues.min()
