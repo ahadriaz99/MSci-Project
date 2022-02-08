@@ -96,9 +96,9 @@ def disc_config_very_fast(N, M, L):
                     f.write(str(basis[j])+' ')
                 f.write('\n')
                 
-                print('Basis ',basis)
+                #print('Basis ',basis)
                 counter += 1
-                print('Count ', counter)
+                #print('Count ', counter)
 
         f.close()
                 
@@ -236,7 +236,7 @@ def sphere_config_very_fast(N, M, L, S):
         bases = gen_bases(N, i)
         
         for basis in bases:
-            print (basis)
+            print(basis)
             if len(basis) > M:
                      #basis = basis[:M]
                     # assert len(basis) == M

@@ -23,7 +23,7 @@ from numpy import linalg as la
 
 
 
-N0 = 4
+N0 = 6
 M = N0*(N0-1)
 mu = N0**2/(2*M)
 

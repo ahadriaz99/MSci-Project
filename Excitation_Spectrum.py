@@ -20,15 +20,15 @@ import Disc as disc
 import config as configs
 from numpy import linalg as la
 
-N0 = 4
-M = 12
+N0 = 5
+M = 20
 mu = N0**2/(2*M)
 N_range = np.array([N0-1,N0, N0+1])
 e_grounds = []
 e_values = []
 eprime_grounds = [] # For sign problems
 gaps = []
-L_range = np.linspace(0,M-1,M)
+L_range = np.linspace(0,25,26)
 
 print('Basis generation...')
 configs.disc_config_very_fast(N0, M, M)
@@ -46,12 +46,13 @@ for L in L_range:
         print('Large Fock space...')
         assert 0
     H.construct_Hamiltonian_fast()
-    H.print_matrix(H.many_body_H)
+    #H.print_matrix(H.many_body_H)
     evalues, evecs = H.diagonalise()
     e_values.append(evalues)
     e_grounds.append(H.e_ground)
     eprime_grounds.append(H.check_sign_problem())
     gaps.append(H.gap)
+    H.check_sign_problem()
     
     with open('Disc_Full_Spectrum_N%d_M%d.txt'%(N0, M), 'a') as f:
         if (L == 0):

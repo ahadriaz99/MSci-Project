@@ -395,7 +395,7 @@ class disc_Hamiltonian_fast(Hamiltonian):
                     for k in range(self.M):
                         for l in range(self.M):
                             if i == j == k == l or (k == i and l == j) or (k == j and l == i):
-                                matrix_overlap = -self.matrix_overlap_disc(i, j, k, l)
+                                matrix_overlap = self.matrix_overlap_disc(i, j, k, l)
                                 if (abs(matrix_overlap) > self.tolerance):
                                     f.write(('%5.10f %d %d %d %d \n'%(matrix_overlap, (i+1), (k+1), (j+1), (l+1))))
                             else:

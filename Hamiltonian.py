@@ -258,7 +258,7 @@ class Hamiltonian:
         print('Diagonalising stoquastic Hamiltonian...')
 
         H_prime = -abs(self.many_body_H)
-        #H_prime[np.diag_indices(self.fock_size)] = np.diag(self.many_body_H)
+        H_prime[np.diag_indices(self.fock_size)] = np.diag(self.many_body_H)
         #self.print_matrix(H_prime)
         
         evalues, evectors = la.eigh(H_prime)
@@ -278,8 +278,8 @@ class Hamiltonian:
         print('---------------------')
         print(self.e_ground, 'Ground state of phsyical H [V0]')
         print(e_ground_prime, 'Ground state of unphysical H\' [V0]')
-        print(evalues)
-        print(evectors)
+        #print(evalues)
+        #print(evectors)
         for ground_index in degen_index:
         
             e_ground_prime_config = evectors.T[np.where(evalues==evalues[ground_index])]

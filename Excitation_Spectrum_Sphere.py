@@ -21,8 +21,8 @@ import Ryser_Algorithm as ryser
 import config as configs
 from numpy import linalg as la
 
-N0 = 7
-S = 6
+N0 = 5
+S = 4
 flux = 2*S
 M = 2*S + 1
 mu = N0/(2*S)
@@ -31,7 +31,7 @@ e_grounds = []
 e_values = []
 eprime_grounds = [] # For sign problems
 gaps = []
-L_range = np.linspace(0,S,S+1)
+L_range = np.linspace(0,8,8+1)
 
 print('Basis generation...')
 configs.sphere_config_fast(N0, M, M, S)
@@ -62,6 +62,7 @@ for L in L_range:
         if (L == 0):
             f.write('N %d M %d \n'%(N0, M))
         f.write('L %d \n'%(L))
+
         for i in range(len(e_values[int(L)])):
             f.write(str(e_values[int(L)][i])+" ")
         f.write('\n')
