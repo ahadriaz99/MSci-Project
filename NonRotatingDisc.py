@@ -51,7 +51,16 @@ class non_rotatingHamiltonian(Hamiltonian):
         self.tolerance = 1e-10
         self. L = L # Restrict total angular momentum for each Fock vector
         
+        # Set interaction energy scale to 1
         self.V0 = 1
+        self.lengthratio = 100 # = (a_z/a_s: trap length/scattering length)
+        # Scale kinetic energy scale accordingly
+        self.T0 = np.sqrt(np.pi/2)*np.pi*self.lengthratio
+        
+        self.condensate_fraction = None # No. excitations in lowest SP state
+        self.GP_weight = None # Weight of Gross-Pitaevskii (fully condensed) permanent
+        self.MF_perm = None # Weight of dominant permanent in FCI expansion
+        self.MF_energy = None # Energy content of dominant permanent in FCI expansion
     
     def generate_basis(self):
         '''
@@ -90,11 +99,7 @@ class non_rotatingHamiltonian(Hamiltonian):
     
     def kineticterm(self, i):
         
-        
-        self.lengthratio = 100
-        self.factor = np.sqrt(np.pi/2)*np.pi*self.lengthratio
-        
-        return self.factor*(i**2)
+        return self.T0*(i**2)
     
     
     def diag_entry(self, basis):
@@ -234,6 +239,22 @@ class non_rotatingHamiltonian(Hamiltonian):
             if (counter % 100 == 0):
                 print('Fast Hamiltonian construction progress [%] ', (counter/self.fock_size)*100)
             counter += 1
+            
+    def ground_state_analysis(self):
+        # Index of MF permanent
+        print(np.max(self.e_vector_ground))
+        print(self.e_vector_ground[0])
+        max_index = np.where(np.max(self.e_vector_ground[0]) == self.e_vector_ground[0])[0][0]
+        print('max index', max_index)
+        self.MF_perm = self.basis[max_index]
+        self.MF_weight = self.e_vector_ground[0][max_index]
+        print('Mean-field permanent info')
+        print(self.MF_perm.print_info())
+        print('Weight: ', self.MF_weight)
+        #print('Permanent energy: ', self.many_body_H[max_index, max_index])
+        #print('MF energy / E0: ',  self.many_body_H[max_index, max_index]/self.e_ground)
+        
+        
     
     def check_degeneracy(self):
         '''
@@ -280,7 +301,6 @@ class non_rotatingHamiltonian(Hamiltonian):
         assert (self.fock_size == len(self.evalues))
         
         
-        
         for ground_index in range(len(self.degen_evalues[0])):
             print(len(self.degen_evectors[0]), len(self.degen_evalues[0]))
             assert len(self.degen_evectors[0]) == len(self.degen_evalues[0])
@@ -299,6 +319,8 @@ class non_rotatingHamiltonian(Hamiltonian):
             plt.legend()
             plt.savefig('Disc_Ground_Config_i%d_N%d_M%d_L%d.jpeg'%(ground_index, self.N, self.M, self.L))
             plt.close()
+            
+            
         
     def check_degeneracy(self):
         '''
@@ -370,7 +392,7 @@ class non_rotatingHamiltonian(Hamiltonian):
         #print(self.degen_evalues)
         #print(self.degen_evectors)
     
-H = non_rotatingHamiltonian(5,5)
+H = non_rotatingHamiltonian(10,7)
 H.generate_basis()
 H.construct_Hamiltonian_fast()
 #H.print_matrix(H.many_body_H)
@@ -379,6 +401,7 @@ evalues, evecs = H.diagonalise()
 print('Hamiltonian eigenvalues [V0]')
 print(evalues)
 print('Ground state energy [V0] ', H.e_ground)
+H.ground_state_analysis()
 H.check_sign_problem()
 H.check_degeneracy()
     
