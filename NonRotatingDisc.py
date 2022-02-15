@@ -10,10 +10,26 @@ import math
 import matplotlib.pyplot as plt
 import copy
 
+from Hamiltonian import Hamiltonian
 from Fock_vector import fock_vector
 import Ryser_Algorithm as ryser
 import config as configs
 from numpy import linalg as la
+from decimal import Decimal
+from Fock_vector import fock_vector
+from Disc_Hamiltonian import disc_Hamiltonian
+
+params = {
+   'axes.labelsize': 35,
+   'font.size': 35,
+   'legend.fontsize': 35,
+   'lines.linewidth' : 2,
+   'lines.markersize' : 35,
+   'xtick.labelsize': 35,
+   'ytick.labelsize': 35,
+   'figure.figsize': [40, 20]
+   }
+plt.rcParams.update(params)
 
 def Dirac_Delta(a, b):
     '''
@@ -70,7 +86,7 @@ class non_rotatingHamiltonian(Hamiltonian):
         if (i+j != k+l):
             return 0
         else:
-            return self.V0*self.additionalfactor
+            return self.additionalfactor
     
     def kineticterm(self, i):
         
@@ -284,8 +300,77 @@ class non_rotatingHamiltonian(Hamiltonian):
             plt.savefig('Disc_Ground_Config_i%d_N%d_M%d_L%d.jpeg'%(ground_index, self.N, self.M, self.L))
             plt.close()
         
+    def check_degeneracy(self):
+        '''
+        Find degeneracies within spectrum
+        '''
+        self.degen_evalues = []
+        self.degen_evectors = []
+        
+        for i in range(len(self.evalues)):
+            self.degen_evalues.append([i])
+            self.degen_evectors.append([self.evectors.T[i]])
+            for j in range(i+1, len(self.evalues)):
+                if abs(self.evalues[i] - self.evalues[j]) <= self.tolerance:
+                    self.degen_evalues[-1].append(j)
+                    self.degen_evectors[-1].append(self.evectors.T[j])
+        
+        degeneracy = np.zeros(len(self.evalues))
+        
+        for i in range(len(self.evalues)):
+            degeneracy[i] = len(self.degen_evalues[i])
             
-H = non_rotatingHamiltonian(4,6)
+        plt.title('Degeneracy of spectrum\n'+\
+                 'Disc geometry\nN = %d   M = %d   L = %d'%(self.N, self.M, self.L))
+        plt.bar(x=np.arange(1, self.fock_size+1), height=degeneracy)
+        plt.xlabel('Sorted eigenstate index')
+        plt.ylabel('Degeneracy')
+        plt.grid()
+        plt.legend()
+        plt.savefig('BEC_Degeneracy_N%d_M%d_L%d.jpeg'%(self.N, self.M, self.L))
+        plt.close()
+        
+        plt.title('Eigenvalue spectrum\n'+\
+                 'Disc geometry\nN = %d   M = %d   L = %d'%(self.N, self.M, self.L))
+        nT, binsT, patchesT = plt.hist(x=self.evalues, bins=15, color='red',
+                            alpha=0.7, rwidth=0.85, label='FCI Spectrum')
+        plt.xlabel('Eigenvalues [$V_0$]')
+        plt.ylabel('Degeneracy')
+        plt.legend()
+        plt.grid()
+        plt.savefig('BEC_Spectrum_N%d_M%d_L%d.jpeg'%(self.N, self.M, self.L))
+        plt.close()
+        
+        assert (self.evalues.min() == self.evalues[0])
+        assert (self.fock_size == len(self.evalues))
+        
+        
+        
+        for ground_index in range(len(self.degen_evalues[0])):
+            print(len(self.degen_evectors[0]), len(self.degen_evalues[0]))
+            assert len(self.degen_evectors[0]) == len(self.degen_evalues[0])
+            #print(self.degen_evectors[0][ground_index])
+            print(len(self.degen_evectors[0][ground_index]))
+            print(ground_index)
+            plt.figure(ground_index)
+            plt.title('Degenerate ground state configuration index %d \n'%(ground_index)+\
+                     'Disc geometry\nN = %d   M = %d   L = %d'%(self.N, self.M, self.L))
+            plt.bar(x=np.arange(1, self.fock_size+1), height=self.degen_evectors[0][ground_index][0])
+            #nT, binsT, patchesT =\
+            #plt.hist(x=self.degen_evectors[0][ground_index],bins=self.fock_size, color='red',alpha=0.7, rwidth=0.85, label='Full Configuration')
+            plt.xlabel('Many-body basis index')
+            plt.ylabel('Amplitude')
+            plt.grid()
+            plt.legend()
+            plt.savefig('BEC_Ground_Config_i%d_N%d_M%d_L%d.jpeg'%(ground_index, self.N, self.M, self.L))
+            plt.close()
+        
+                
+        #print('Degenerate evector indices')
+        #print(self.degen_evalues)
+        #print(self.degen_evectors)
+    
+H = non_rotatingHamiltonian(5,5)
 H.generate_basis()
 H.construct_Hamiltonian_fast()
 #H.print_matrix(H.many_body_H)

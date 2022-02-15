@@ -403,9 +403,9 @@ class disc_Hamiltonian_fast(Hamiltonian):
                                 if (abs(matrix_overlap) > self.tolerance):
                                     f.write(('%5.10f %d %d %d %d \n'%(matrix_overlap, (i+1), (k+1), (j+1), (l+1))))
         f.close()   
-N = 7
-M = 42
-L = 42
+#N = 7
+#M = 42
+#L = 42
 '''
 N = 6
 M = 8
@@ -435,11 +435,11 @@ H.print_matrix(H.many_body_H)
 #H.show_basis()
 #H.BoseDump()
 #H.print_matrix(H.construct_Hamiltonian())
-evalues, evecs = H.diagonalise()
-print('Hamiltonian eigenvalues [V0]')
-print(evalues)
-print('Ground state energy [V0] ', H.e_ground)
-H.check_sign_problem()
+#evalues, evecs = H.diagonalise()
+#print('Hamiltonian eigenvalues [V0]')
+#print(evalues)
+#print('Ground state energy [V0] ', H.e_ground)
+#H.check_sign_problem()
 
 
 #print(configs.configurations(N=3, M=10))
