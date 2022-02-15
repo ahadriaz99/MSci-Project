@@ -4,6 +4,7 @@ Created on Tue Feb  8 16:09:50 2022
 
 @author: Owner
 """
+from Hamiltonian import Hamiltonian
 import numpy as np
 import math
 import matplotlib.pyplot as plt
@@ -71,6 +72,15 @@ class non_rotatingHamiltonian(Hamiltonian):
         else:
             return self.V0*self.additionalfactor
     
+    def kineticterm(self, i):
+        
+        
+        self.lengthratio = 100
+        self.factor = np.sqrt(np.pi/2)*np.pi*self.lengthratio
+        
+        return self.factor*(i**2)
+    
+    
     def diag_entry(self, basis):
         '''
         Returns diagonal entry for contact repulsion Hamiltonian
@@ -88,6 +98,7 @@ class non_rotatingHamiltonian(Hamiltonian):
                 # Half factor comes from Hamiltonian definition
                 diag_element += 0.5*self.matrix_overlap(i, i, i, i)\
                                 *basis.occups[i]*(basis.occups[i]-1)
+                diag_element += self.kineticterm(i)*basis.occups[i]*basis.occups[i]
             # we only have to consider non-equal i, j pairs as symmetry
             # gives equal elements for ijij jiij, ijji, jiji basis indices
  
@@ -207,18 +218,83 @@ class non_rotatingHamiltonian(Hamiltonian):
             if (counter % 100 == 0):
                 print('Fast Hamiltonian construction progress [%] ', (counter/self.fock_size)*100)
             counter += 1
+    
+    def check_degeneracy(self):
+        '''
+        Find degeneracies within spectrum
+        '''
+        self.degen_evalues = []
+        self.degen_evectors = []
+        
+        for i in range(len(self.evalues)):
+            self.degen_evalues.append([i])
+            self.degen_evectors.append([self.evectors.T[i]])
+            for j in range(i+1, len(self.evalues)):
+                if abs(self.evalues[i] - self.evalues[j]) <= self.tolerance:
+                    self.degen_evalues[-1].append(j)
+                    self.degen_evectors[-1].append(self.evectors.T[j])
+        
+        degeneracy = np.zeros(len(self.evalues))
+        
+        for i in range(len(self.evalues)):
+            degeneracy[i] = len(self.degen_evalues[i])
             
-H = non_rotatingHamiltonian(2,2)
+        plt.title('Degeneracy of spectrum\n'+\
+                 'Disc geometry\nN = %d   M = %d   L = %d'%(self.N, self.M, self.L))
+        plt.bar(x=np.arange(1, self.fock_size+1), height=degeneracy)
+        plt.xlabel('Sorted eigenstate index')
+        plt.ylabel('Degeneracy')
+        plt.grid()
+        plt.legend()
+        plt.savefig('Disc_Degeneracy_N%d_M%d_L%d.jpeg'%(self.N, self.M, self.L))
+        plt.close()
+        
+        plt.title('Eigenvalue spectrum\n'+\
+                 'Disc geometry\nN = %d   M = %d   L = %d'%(self.N, self.M, self.L))
+        nT, binsT, patchesT = plt.hist(x=self.evalues, bins=15, color='red',
+                            alpha=0.7, rwidth=0.85, label='FCI Spectrum')
+        plt.xlabel('Eigenvalues [$V_0$]')
+        plt.ylabel('Degeneracy')
+        plt.legend()
+        plt.grid()
+        plt.savefig('Disc_Spectrum_N%d_M%d_L%d.jpeg'%(self.N, self.M, self.L))
+        plt.close()
+        
+        assert (self.evalues.min() == self.evalues[0])
+        assert (self.fock_size == len(self.evalues))
+        
+        
+        
+        for ground_index in range(len(self.degen_evalues[0])):
+            print(len(self.degen_evectors[0]), len(self.degen_evalues[0]))
+            assert len(self.degen_evectors[0]) == len(self.degen_evalues[0])
+            #print(self.degen_evectors[0][ground_index])
+            print(len(self.degen_evectors[0][ground_index]))
+            print(ground_index)
+            plt.figure(ground_index)
+            plt.title('Degenerate ground state configuration index %d \n'%(ground_index)+\
+                     'Disc geometry\nN = %d   M = %d   L = %d'%(self.N, self.M, self.L))
+            plt.bar(x=np.arange(1, self.fock_size+1), height=self.degen_evectors[0][ground_index][0])
+            #nT, binsT, patchesT =\
+            #plt.hist(x=self.degen_evectors[0][ground_index],bins=self.fock_size, color='red',alpha=0.7, rwidth=0.85, label='Full Configuration')
+            plt.xlabel('Many-body basis index')
+            plt.ylabel('Amplitude')
+            plt.grid()
+            plt.legend()
+            plt.savefig('Disc_Ground_Config_i%d_N%d_M%d_L%d.jpeg'%(ground_index, self.N, self.M, self.L))
+            plt.close()
+        
+            
+H = non_rotatingHamiltonian(4,6)
 H.generate_basis()
 H.construct_Hamiltonian_fast()
-H.print_matrix(H.many_body_H)
+#H.print_matrix(H.many_body_H)
 
 evalues, evecs = H.diagonalise()
 print('Hamiltonian eigenvalues [V0]')
 print(evalues)
 print('Ground state energy [V0] ', H.e_ground)
 H.check_sign_problem()
-
-
+H.check_degeneracy()
     
     
