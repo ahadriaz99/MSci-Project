@@ -46,14 +46,16 @@ class non_rotatingHamiltonian(Hamiltonian):
     Core class for impelementing Full-Configuration Interaction
     Hamiltonians in bosonic Fock space basis for non-rotating pancakes
     '''
-    def __init__(self,N, M, L=0):
+    def __init__(self,N, M, S, L=0):
         super().__init__(N,M)
         self.tolerance = 1e-10
         self. L = L # Restrict total angular momentum for each Fock vector
-        
+        self.S = S
+        assert M == 2*S + 1
+        self.M = M
         # Set interaction energy scale to 1
         self.V0 = 1
-        self.lengthratio = 100 # = (a_z/a_s: trap length/scattering length)
+        self.lengthratio = 1e-15 # = (a_z/a_s: trap length/scattering length)
         # Scale kinetic energy scale accordingly
         self.T0 = np.sqrt(np.pi/2)*np.pi*self.lengthratio
         
@@ -95,11 +97,11 @@ class non_rotatingHamiltonian(Hamiltonian):
         if (i+j != k+l):
             return 0
         else:
-            return self.additionalfactor
+            return self.V0
     
     def kineticterm(self, i):
         
-        return self.T0*(i**2)
+        return self.T0*((i-self.S)**2)
     
     
     def diag_entry(self, basis):
@@ -119,7 +121,7 @@ class non_rotatingHamiltonian(Hamiltonian):
                 # Half factor comes from Hamiltonian definition
                 diag_element += 0.5*self.matrix_overlap(i, i, i, i)\
                                 *basis.occups[i]*(basis.occups[i]-1)
-                diag_element += self.kineticterm(i)*basis.occups[i]*basis.occups[i]
+                diag_element += self.kineticterm(i)
             # we only have to consider non-equal i, j pairs as symmetry
             # gives equal elements for ijij jiij, ijji, jiji basis indices
  
@@ -255,7 +257,7 @@ class non_rotatingHamiltonian(Hamiltonian):
         #print('MF energy / E0: ',  self.many_body_H[max_index, max_index]/self.e_ground)
         
         
-    
+ 
     def check_degeneracy(self):
         '''
         Find degeneracies within spectrum
@@ -283,7 +285,7 @@ class non_rotatingHamiltonian(Hamiltonian):
         plt.ylabel('Degeneracy')
         plt.grid()
         plt.legend()
-        plt.savefig('Disc_Degeneracy_N%d_M%d_L%d.jpeg'%(self.N, self.M, self.L))
+        plt.savefig('BEC_Degeneracy_N%d_M%d_S%d_L%d.jpeg'%(self.N, self.M, self.S, self.L))
         plt.close()
         
         plt.title('Eigenvalue spectrum\n'+\
@@ -294,73 +296,7 @@ class non_rotatingHamiltonian(Hamiltonian):
         plt.ylabel('Degeneracy')
         plt.legend()
         plt.grid()
-        plt.savefig('Disc_Spectrum_N%d_M%d_L%d.jpeg'%(self.N, self.M, self.L))
-        plt.close()
-        
-        assert (self.evalues.min() == self.evalues[0])
-        assert (self.fock_size == len(self.evalues))
-        
-        
-        for ground_index in range(len(self.degen_evalues[0])):
-            print(len(self.degen_evectors[0]), len(self.degen_evalues[0]))
-            assert len(self.degen_evectors[0]) == len(self.degen_evalues[0])
-            #print(self.degen_evectors[0][ground_index])
-            print(len(self.degen_evectors[0][ground_index]))
-            print(ground_index)
-            plt.figure(ground_index)
-            plt.title('Degenerate ground state configuration index %d \n'%(ground_index)+\
-                     'Disc geometry\nN = %d   M = %d   L = %d'%(self.N, self.M, self.L))
-            plt.bar(x=np.arange(1, self.fock_size+1), height=self.degen_evectors[0][ground_index][0])
-            #nT, binsT, patchesT =\
-            #plt.hist(x=self.degen_evectors[0][ground_index],bins=self.fock_size, color='red',alpha=0.7, rwidth=0.85, label='Full Configuration')
-            plt.xlabel('Many-body basis index')
-            plt.ylabel('Amplitude')
-            plt.grid()
-            plt.legend()
-            plt.savefig('Disc_Ground_Config_i%d_N%d_M%d_L%d.jpeg'%(ground_index, self.N, self.M, self.L))
-            plt.close()
-            
-            
-        
-    def check_degeneracy(self):
-        '''
-        Find degeneracies within spectrum
-        '''
-        self.degen_evalues = []
-        self.degen_evectors = []
-        
-        for i in range(len(self.evalues)):
-            self.degen_evalues.append([i])
-            self.degen_evectors.append([self.evectors.T[i]])
-            for j in range(i+1, len(self.evalues)):
-                if abs(self.evalues[i] - self.evalues[j]) <= self.tolerance:
-                    self.degen_evalues[-1].append(j)
-                    self.degen_evectors[-1].append(self.evectors.T[j])
-        
-        degeneracy = np.zeros(len(self.evalues))
-        
-        for i in range(len(self.evalues)):
-            degeneracy[i] = len(self.degen_evalues[i])
-            
-        plt.title('Degeneracy of spectrum\n'+\
-                 'Disc geometry\nN = %d   M = %d   L = %d'%(self.N, self.M, self.L))
-        plt.bar(x=np.arange(1, self.fock_size+1), height=degeneracy)
-        plt.xlabel('Sorted eigenstate index')
-        plt.ylabel('Degeneracy')
-        plt.grid()
-        plt.legend()
-        plt.savefig('BEC_Degeneracy_N%d_M%d_L%d.jpeg'%(self.N, self.M, self.L))
-        plt.close()
-        
-        plt.title('Eigenvalue spectrum\n'+\
-                 'Disc geometry\nN = %d   M = %d   L = %d'%(self.N, self.M, self.L))
-        nT, binsT, patchesT = plt.hist(x=self.evalues, bins=15, color='red',
-                            alpha=0.7, rwidth=0.85, label='FCI Spectrum')
-        plt.xlabel('Eigenvalues [$V_0$]')
-        plt.ylabel('Degeneracy')
-        plt.legend()
-        plt.grid()
-        plt.savefig('BEC_Spectrum_N%d_M%d_L%d.jpeg'%(self.N, self.M, self.L))
+        plt.savefig('BEC_Spectrum_N%d_M%d_S%d_L%d.jpeg'%(self.N, self.M, self.S, self.L))
         plt.close()
         
         assert (self.evalues.min() == self.evalues[0])
@@ -384,7 +320,7 @@ class non_rotatingHamiltonian(Hamiltonian):
             plt.ylabel('Amplitude')
             plt.grid()
             plt.legend()
-            plt.savefig('BEC_Ground_Config_i%d_N%d_M%d_L%d.jpeg'%(ground_index, self.N, self.M, self.L))
+            plt.savefig('BEC_Ground_Config_i%d_N%d_M%d_S%d_L%d.jpeg'%(ground_index, self.N, self.M,self.S, self.L))
             plt.close()
         
                 
@@ -392,7 +328,7 @@ class non_rotatingHamiltonian(Hamiltonian):
         #print(self.degen_evalues)
         #print(self.degen_evectors)
     
-H = non_rotatingHamiltonian(10,7)
+H = non_rotatingHamiltonian(N=10,S=1,M=3)
 H.generate_basis()
 H.construct_Hamiltonian_fast()
 #H.print_matrix(H.many_body_H)
