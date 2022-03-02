@@ -269,6 +269,7 @@ class non_rotatingHamiltonian(Hamiltonian):
         #print('Permanent energy: ', self.many_body_H[max_index, max_index])
         #print('MF energy / E0: ',  self.many_body_H[max_index, max_index]/self.e_ground)
         
+        return self.MF_amplitude, self.GP_amplitude
         
  
     def check_degeneracy(self):
@@ -340,8 +341,9 @@ class non_rotatingHamiltonian(Hamiltonian):
         #print('Degenerate evector indices')
         #print(self.degen_evalues)
         #print(self.degen_evectors)
-    
-H = non_rotatingHamiltonian(N=5,S=3,M=7)
+
+'''
+H = non_rotatingHamiltonian(N=3,S=3,M=7)
 H.generate_basis()
 H.construct_Hamiltonian_fast()
 #H.print_matrix(H.many_body_H)
@@ -352,8 +354,9 @@ print(evalues)
 print('Ground state energy [V0] ', H.e_ground)
 print('Ground state configuration', H.e_vector_ground)
 #H.show_basis()
-H.ground_state_analysis()
+MF_amp, GP_amp = H.ground_state_analysis()
+print(MF_amp, GP_amp)
 #H.check_sign_problem()
 H.check_degeneracy()
-    
+'''
     
