@@ -237,12 +237,12 @@ class Hamiltonian:
         print('Sorting eigevalues...')
         self.evalues = np.sort(np.array(evalues))
         self.evectors = []
-        self.e_ground, self.e_vector_ground = e_ground, evectors[np.where(evalues == e_ground)]
+        self.e_ground, self.e_vector_ground = e_ground, evectors.T[np.where(evalues == e_ground)]
         
         # Sort eigenvectors accoring to eigenvalues
         
         for i in range(len(evalues)):
-            self.evectors.append(evectors[np.where(evalues==self.evalues[i])])
+            self.evectors.append(evectors.T[np.where(evalues==self.evalues[i])])
         self.evectors = np.array(self.evectors)
         
         return self.evalues, self.evectors

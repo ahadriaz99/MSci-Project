@@ -46,7 +46,7 @@ class non_rotatingHamiltonian(Hamiltonian):
     Core class for impelementing Full-Configuration Interaction
     Hamiltonians in bosonic Fock space basis for non-rotating pancakes
     '''
-    def __init__(self,N, M, S, L=0):
+    def __init__(self,N, M, S, length_ratio=10, L=0):
         super().__init__(N,M)
         self.tolerance = 1e-10
         self. L = L # Restrict total angular momentum for each Fock vector
@@ -55,15 +55,17 @@ class non_rotatingHamiltonian(Hamiltonian):
         self.M = M
         # Set interaction energy scale to 1
         self.V0 = 1
-        self.lengthratio = 1e-15 # = (a_z/a_s: trap length/scattering length)
+        self.lengthratio = length_ratio # = (a_z/a_s: trap length/scattering length)
         # Scale kinetic energy scale accordingly
         self.T0 = np.sqrt(np.pi/2)*np.pi*self.lengthratio
         
         self.condensate_fraction = None # No. excitations in lowest SP state
-        self.GP_weight = None # Weight of Gross-Pitaevskii (fully condensed) permanent
-        self.MF_perm = None # Weight of dominant permanent in FCI expansion
+        self.GP_amplitude = None # Weight of Gross-Pitaevskii (fully condensed) permanent
+        self.GP_index = None
+        self.MF_perm = None # Amplitude of dominant permanent in FCI expansion
         self.MF_energy = None # Energy content of dominant permanent in FCI expansion
-    
+        self.MF_amplitude = None # Amplitude of Gross-Pitaevskii permanent
+        
     def generate_basis(self):
         '''
         Generate many-body basis states from repeated combinations
@@ -75,7 +77,11 @@ class non_rotatingHamiltonian(Hamiltonian):
         index = 0
         for i in range(len(config_input)):
             assert len(config_input[i]) == self.M # Check correct input format
-            self.basis.append(fock_vector(self.N, self.M, config_input[i],index=i, S=self.S))
+            vec = fock_vector(self.N, self.M, config_input[i],index=i, S=self.S)
+            self.basis.append(vec)
+            if (self.S in vec.occup_basis):
+                if (vec.occups[self.S] == self.N):
+                    self.GP_index = index
             index += 1
         
         print('Basis generation complete')
@@ -97,7 +103,7 @@ class non_rotatingHamiltonian(Hamiltonian):
         if (i+j != k+l):
             return 0
         else:
-            return self.V0
+            return self.V0*self.additionalfactor
     
     def kineticterm(self, i):
         
@@ -116,12 +122,13 @@ class non_rotatingHamiltonian(Hamiltonian):
         #print(occup_basis)
         for index in range(len(occup_basis)):
             i = occup_basis[index]
+            diag_element += self.kineticterm(i)
             if basis.occups[i] > 1:
                 #print(i)
                 # Half factor comes from Hamiltonian definition
                 diag_element += 0.5*self.matrix_overlap(i, i, i, i)\
                                 *basis.occups[i]*(basis.occups[i]-1)
-                diag_element += self.kineticterm(i)
+               
             # we only have to consider non-equal i, j pairs as symmetry
             # gives equal elements for ijij jiij, ijji, jiji basis indices
  
@@ -244,15 +251,21 @@ class non_rotatingHamiltonian(Hamiltonian):
             
     def ground_state_analysis(self):
         # Index of MF permanent
-        print(np.max(self.e_vector_ground))
-        print(self.e_vector_ground[0])
-        max_index = np.where(np.max(self.e_vector_ground[0]) == self.e_vector_ground[0])[0][0]
+        #print(np.max(self.e_vector_ground.T))
+        #print(self.e_vector_ground[0])
+        max_index = np.where(max(self.e_vector_ground[0], key=abs) == self.e_vector_ground[0])[0][0]
         print('max index', max_index)
+        
+        
         self.MF_perm = self.basis[max_index]
-        self.MF_weight = self.e_vector_ground[0][max_index]
+        self.MF_amplitude = self.e_vector_ground[0][max_index]
         print('Mean-field permanent info')
         print(self.MF_perm.print_info())
-        print('Weight: ', self.MF_weight)
+        print('Amplitude: ', self.MF_amplitude)
+        
+        self.GP_amplitude = self.e_vector_ground[0][self.GP_index]
+        print('Gross-Pitaevskii permanent amplitude: ', self.GP_amplitude)
+        
         #print('Permanent energy: ', self.many_body_H[max_index, max_index])
         #print('MF energy / E0: ',  self.many_body_H[max_index, max_index]/self.e_ground)
         
@@ -328,7 +341,7 @@ class non_rotatingHamiltonian(Hamiltonian):
         #print(self.degen_evalues)
         #print(self.degen_evectors)
     
-H = non_rotatingHamiltonian(N=10,S=1,M=3)
+H = non_rotatingHamiltonian(N=5,S=3,M=7)
 H.generate_basis()
 H.construct_Hamiltonian_fast()
 #H.print_matrix(H.many_body_H)
@@ -337,8 +350,10 @@ evalues, evecs = H.diagonalise()
 print('Hamiltonian eigenvalues [V0]')
 print(evalues)
 print('Ground state energy [V0] ', H.e_ground)
+print('Ground state configuration', H.e_vector_ground)
+#H.show_basis()
 H.ground_state_analysis()
-H.check_sign_problem()
+#H.check_sign_problem()
 H.check_degeneracy()
     
     
