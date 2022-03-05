@@ -34,22 +34,24 @@ params = {
 plt.rcParams.update(params)
 
 Nstart, Nend = 2, 10
-S = 3
-M = 2*S + 1
+
+S0 = 4
+M0 = 2*S0 + 1
+Length_ratio = 10
 N = np.linspace(int(Nstart),int(Nend),int((Nend-Nstart+1)))
 N_inverse = []
-for i in N:
+for i in range(Nstart, Nend+1, 2):
     N_inverse.append(1/i)
 print(N_inverse)
 print(N)
 
 MF_amps = []
 GP_amps = []
-condensate_fraction = []
-depletion_fraction  = []
+condensate_fractions = []
+depletion_fractions = []
 
-for i in range(Nstart, Nend+1):
-    H = non_rotatingHamiltonian(N=i,S=S,M=M)
+for i in range(Nstart, Nend+1, 2):
+    H = non_rotatingHamiltonian(N=i,S= i/2,M= i + 1)
     H.generate_basis()
     H.construct_Hamiltonian_fast()
     
@@ -59,33 +61,31 @@ for i in range(Nstart, Nend+1):
     print('Ground state energy [V0] ', H.e_ground)
     print('Ground state configuration', H.e_vector_ground)
     #H.show_basis()
-    MF_amp, GP_amp = H.ground_state_analysis()
+    MF_amp, GP_amp, condensate_fraction = H.ground_state_analysis()
     MF_amps.append(MF_amp)
     GP_amps.append(GP_amp)
+    condensate_fractions.append(condensate_fraction)
+    depletion_fractions.append(1-condensate_fraction)
     #H.check_sign_problem()
     H.check_degeneracy()
 
-for k in GP_amps:
-    condensate_fraction.append(k**2)
-    depletion_fraction.append(1 - k**2)
-
 plt.figure()
 plt.title('Finite Size Scaling for Condensate Fraction \n' +\
-          'N = %d to %d , M = %d'%(Nstart, Nend, M))
+          'N = %d to %d , Length Ratio = %d'%(Nstart, Nend, Length_ratio))
 plt.ylabel('Condensate Fraction')
 plt.xlabel('1/N')
 plt.grid()
-plt.plot(N_inverse, condensate_fraction)
-plt.plot(N_inverse, condensate_fraction, 'x', color = 'black', mew = 3)
+plt.plot(N_inverse, condensate_fractions)
+plt.plot(N_inverse, condensate_fractions, 'x', color = 'black', mew = 3)
 plt.show()
 
 plt.figure()
 plt.title('Finite Size Scaling for Depletion Fraction \n' +\
-          'N = %d to %d , M = %d'%(Nstart, Nend, M))
+          'N = %d to %d , Length Ratio = %d'%(Nstart, Nend, Length_ratio))
 plt.ylabel('Depletion Fraction')
 plt.xlabel('1/N')
 plt.grid()
-plt.plot(N_inverse, depletion_fraction)
-plt.plot(N_inverse, depletion_fraction, 'x', color = 'black', mew = 3)
+plt.plot(N_inverse, depletion_fractions)
+plt.plot(N_inverse, depletion_fractions, 'x', color = 'black', mew = 3)
 plt.show()
         
