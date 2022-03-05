@@ -71,27 +71,44 @@ class non_rotatingHamiltonian(Hamiltonian):
         Generate many-body basis states from repeated combinations
         and index them
         '''
-        config_input = np.array(configs.configurations(self.N, self.M)) # Calculate repeated combinations
-        #assert len(config_input) == self.fock_size # Check dimensionality
-        
+        print('Basis generation...')
+        configs.sphere_config_fast(int(self.N), int(self.M), int(self.L), int(self.S))
         index = 0
-        for i in range(len(config_input)):
-            assert len(config_input[i]) == self.M # Check correct input format
-            vec = fock_vector(self.N, self.M, config_input[i],index=i, S=self.S)
-            self.basis.append(vec)
-            if (self.S in vec.occup_basis):
-                if (vec.occups[self.S] == self.N):
-                    self.GP_index = index
-            index += 1
-        
+        file='Sphere_Configurations_N%dM%dL%dS%d.txt'%(self.N, self.M, self.L, self.S)
+        print('Reading in configurations...')
+        with open(file, 'r') as f:
+            for line in f:
+                split_line = line.split()
+                if (split_line[0]=='N,'):
+                    continue
+                N = split_line[0]
+                M = split_line[1]
+                L = split_line[2]
+                S = split_line[3]
+                basis = []
+                config = split_line[4:]
+                #print(config)
+                for item in config:
+                    #print(item)
+                    basis.append(int(item))
+                #print(N, M, L, len(config), len(basis))
+                #print(config, basis)
+                #print(self.N, N, self.M, M)
+                assert int(N) == self.N and int(M) == self.M and int(M) == 2*(self.S) +1
+                vector = fock_vector(int(N), int(M), np.array(basis), int(S))
+                assert vector.ang_mom() == self.L
+                vector = fock_vector(int(N), int(M), np.array(basis), S= int(S), index=index)
+                self.basis.append(vector)
+                index += 1
+                if (index % 100 == 0):
+                    print('No. basis read-in ', index)
+            
         print('Basis generation complete')
         print('Fock space size: ', self.fock_size)
                 
         self.basis = np.array(self.basis)
         self.fock_size = index
         self.many_body_H = np.zeros((self.fock_size, self.fock_size))
-        print(self.fock_size)
-    
     
     def matrix_overlap(self, i, j, k, l):
         '''
@@ -342,8 +359,8 @@ class non_rotatingHamiltonian(Hamiltonian):
         #print(self.degen_evalues)
         #print(self.degen_evectors)
 
-'''
-H = non_rotatingHamiltonian(N=3,S=3,M=7)
+
+H = non_rotatingHamiltonian(N=3,S=1,M=3)
 H.generate_basis()
 H.construct_Hamiltonian_fast()
 #H.print_matrix(H.many_body_H)
@@ -358,5 +375,4 @@ MF_amp, GP_amp = H.ground_state_analysis()
 print(MF_amp, GP_amp)
 #H.check_sign_problem()
 H.check_degeneracy()
-'''
-    
+
