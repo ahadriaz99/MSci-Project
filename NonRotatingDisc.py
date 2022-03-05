@@ -99,6 +99,9 @@ class non_rotatingHamiltonian(Hamiltonian):
                 assert vector.ang_mom() == self.L
                 vector = fock_vector(int(N), int(M), np.array(basis), S= int(S), index=index)
                 self.basis.append(vector)
+                if (self.S in vector.occup_basis):
+                    if (vector.occups[self.S] == self.N):
+                        self.GP_index = index
                 index += 1
                 if (index % 100 == 0):
                     print('No. basis read-in ', index)
@@ -109,6 +112,7 @@ class non_rotatingHamiltonian(Hamiltonian):
         self.basis = np.array(self.basis)
         self.fock_size = index
         self.many_body_H = np.zeros((self.fock_size, self.fock_size))
+    
     
     def matrix_overlap(self, i, j, k, l):
         '''
@@ -281,6 +285,7 @@ class non_rotatingHamiltonian(Hamiltonian):
         print('Amplitude: ', self.MF_amplitude)
         
         self.GP_amplitude = self.e_vector_ground[0][self.GP_index]
+        #print('All permanents:', self.e_vector_ground[0])
         print('Gross-Pitaevskii permanent amplitude: ', self.GP_amplitude)
         
         #print('Permanent energy: ', self.many_body_H[max_index, max_index])
@@ -376,3 +381,4 @@ print(MF_amp, GP_amp)
 #H.check_sign_problem()
 H.check_degeneracy()
 
+    
