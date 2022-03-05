@@ -291,8 +291,22 @@ class non_rotatingHamiltonian(Hamiltonian):
         #print('Permanent energy: ', self.many_body_H[max_index, max_index])
         #print('MF energy / E0: ',  self.many_body_H[max_index, max_index]/self.e_ground)
         
-        return self.MF_amplitude, self.GP_amplitude
+        # Calculating condensate fraction
+
+        self.condensate_fraction = 0
+
+        for index, amplitude in enumerate(self.e_vector_ground.squeeze()):
+
+            if (self.S not in self.basis[index].occup_basis):
+                continue
+            else:
+                self.condensate_fraction += \
+                    abs(amplitude)**2 * self.basis[index].occups[self.S]/self.N
+
+        print('Expected condensate fraction: ', self.condensate_fraction)
+        print('Condensate depletion: ', 1-self.condensate_fraction)
         
+        return self.MF_amplitude, self.GP_amplitude
  
     def check_degeneracy(self):
         '''
