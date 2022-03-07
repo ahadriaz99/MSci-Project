@@ -6,10 +6,12 @@ by Ahad Riaz and Marcell Kovacs
 """
 
 from Hamiltonian import Hamiltonian
-import numpy as np
 import math
 import matplotlib.pyplot as plt
 import copy
+from scipy.optimize import curve_fit
+import numpy as np
+import sympy as sym
 
 from Hamiltonian import Hamiltonian
 from NonRotatingDisc import non_rotatingHamiltonian
@@ -67,8 +69,15 @@ for i in range(Nstart, Nend+1, 2):
     condensate_fractions.append(condensate_fraction)
     depletion_fractions.append(1-condensate_fraction)
     #H.check_sign_problem()
-    H.check_degeneracy()
+    #H.check_degeneracy()
 
+def func(x, a, b, c):
+    return a*np.log(b*x) + c
+
+popt, pcov = curve_fit(func, N_inverse, condensate_fractions, p0 = [0.05,0.005,1])
+print ("a = %s , b = %s, c = %s" % (popt[0], popt[1], popt[2]))
+#plt.plot(N_inverse, func(N_inverse, *popt), label="Fitted Curve") #same as line above \/
+ 
 plt.figure()
 plt.title('Finite Size Scaling for Condensate Fraction \n' +\
           'N = %d to %d , Length Ratio = %d'%(Nstart, Nend, Length_ratio))
@@ -77,6 +86,7 @@ plt.xlabel('1/N')
 plt.grid()
 plt.plot(N_inverse, condensate_fractions)
 plt.plot(N_inverse, condensate_fractions, 'x', color = 'black', mew = 3)
+plt.plot(np.linspace(0,0.5,100), popt[0]*np.log(popt[1]*np.linspace(0,0.5,100)) + popt[2], label="Fitted Curve")
 plt.show()
 
 plt.figure()
