@@ -57,7 +57,7 @@ class non_rotatingHamiltonian(Hamiltonian):
         self.V0 = 1
         self.lengthratio = length_ratio # = (a_z/a_s: trap length/scattering length)
         # Scale kinetic energy scale accordingly
-        self.T0 = np.sqrt(np.pi/2)*np.pi*self.lengthratio
+        self.T0 = (np.pi**2)*self.lengthratio
         
         self.condensate_fraction = None # No. excitations in lowest SP state
         self.GP_amplitude = None # Weight of Gross-Pitaevskii (fully condensed) permanent
@@ -143,7 +143,7 @@ class non_rotatingHamiltonian(Hamiltonian):
         #print(occup_basis)
         for index in range(len(occup_basis)):
             i = occup_basis[index]
-            diag_element += self.kineticterm(i)
+            diag_element += self.kineticterm(i)*basis.occups[i]
             if basis.occups[i] > 1:
                 #print(i)
                 # Half factor comes from Hamiltonian definition
@@ -306,7 +306,7 @@ class non_rotatingHamiltonian(Hamiltonian):
         print('Expected condensate fraction: ', self.condensate_fraction)
         print('Condensate depletion: ', 1-self.condensate_fraction)
         
-        return self.MF_amplitude, self.GP_amplitude
+        return self.MF_amplitude, self.GP_amplitude, self.condensate_fraction
  
     def check_degeneracy(self):
         '''
@@ -378,7 +378,7 @@ class non_rotatingHamiltonian(Hamiltonian):
         #print(self.degen_evalues)
         #print(self.degen_evectors)
 
-
+'''
 H = non_rotatingHamiltonian(N=3,S=1,M=3)
 H.generate_basis()
 H.construct_Hamiltonian_fast()
@@ -394,5 +394,5 @@ MF_amp, GP_amp = H.ground_state_analysis()
 print(MF_amp, GP_amp)
 #H.check_sign_problem()
 H.check_degeneracy()
-
+'''
     
