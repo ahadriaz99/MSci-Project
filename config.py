@@ -276,10 +276,10 @@ def sphere_config_very_fast(N, M, L, S):
             #print(basis, ang_mom)
             
                 
-#sphere_config_fast(10,5,10,5)
+sphere_config_fast(N = 10,S= 2, L = 0, M = 5)
 #disc_config_very_fast(3,5 , 5)
 #Test case
-sphere_config_very_fast(3, 5, 5, 2)
+#sphere_config_very_fast(3, 5, 5, 2)
 #sphere_config_fast(3, 5, 5,2)
 #sphere_config_very_fast(3, 5, 15,2)
 #configurations(2,2)
